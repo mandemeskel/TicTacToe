@@ -1,12 +1,16 @@
 #ifndef App_hpp
 #define App_hpp
 
+#include "MyCode.h"
 #include "GlutApp.h"
+#include <deque>
 
 class App: public GlutApp {
     // Maintain app state here
     float mx;
     float my;
+    deque<Shape *> shapes;
+
 public:
     // Constructor, to initialize state
     App(const char* label, int x, int y, int w, int h);
