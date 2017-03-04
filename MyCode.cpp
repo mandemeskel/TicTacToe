@@ -1,4 +1,27 @@
+/**
+ * Michael T. Andemeskel
+ * mandemeskel@ucmerced.edu
+ * CSE165 Spring 2017
+ * 
+ * Copyright 2017
+ * 
+ * Lab info:
+ **/
+
+#if defined WIN32
+#include <freeglut.h>
+#elif defined __APPLE__
+#include <GLUT/glut.h>
+#else
+#include <GL/freeglut.h>
+#endif
+
 #include "MyCode.h"
+#include <iostream>
+#include <cmath>
+#define LENGTH 0.1 
+
+using namespace std;
 
 
 /**
@@ -15,17 +38,19 @@ Shape::~Shape() {}
 Point::Point() {
     this->x = 0;
     this->y = 0;
-    this->r = 0;
+    // purple
+    this->r = 1;
     this->g = 0;
-    this->b = 0;
+    this->b = 1;
 }
 
 Point::Point( float x, float y ) {
     this->x = x;
     this->y = y;
-    this->r = 0;
+    // purple
+    this->r = 1;
     this->g = 0;
-    this->b = 0;
+    this->b = 1;
 }
 
 Point::Point(float x, float y, float r, float g, float b) {
@@ -64,6 +89,21 @@ void Point::invertColor() {
     this->b = abs( this->b - 1 );
 }
 
+float Point::getX() const {
+    return this->x;
+}
+
+float Point::getY() const {
+    return this->y;
+}
+
+void Point::setX( float _x ) {
+    this->x = _x;
+}
+
+void Point::setY( float _y ) {
+    this->y = _y;
+}
 
 
 /**
@@ -100,7 +140,7 @@ Line::Line( Point * point, float length, Direction axis ) {
 
 } 
 
-void Line::draw() {
+void Line::draw() const {
 
     glColor3f( this->start.r, this->start.g, this->start.b );
     glBegin( GL_LINES );
@@ -112,7 +152,7 @@ void Line::draw() {
 
 }
 
-void Line::draw( Point * color ) {
+void Line::draw( Point * color ) const {
 
     glColor3f( color->r, color->g, color->b );
     glBegin( GL_LINES );
@@ -124,7 +164,9 @@ void Line::draw( Point * color ) {
 
 }
 
-void Line::draw( bool supress_color = false ) {
+void Line::draw( bool supress_color = false ) const {
+
+    // cout << "line draw" << endl;
 
     // hide the lines natural color, this is for polygons
     // who want to control their color
@@ -162,7 +204,7 @@ Line::~Line() {
 **/
 Polygon::Polygon() {
 
-    this->origin = Point( 0, 0 );
+    this->upper_left = Point( 0, 0 );
     this->length = 0;
 
 }
@@ -171,29 +213,41 @@ void Polygon::draw() {
 
     // Set the vertex color to be whatever we stored in the point
     glColor3f(
-        this->origin.r, 
-        this->origin.g, 
-        this->origin.b
+        this->upper_left.r, 
+        this->upper_left.g, 
+        this->upper_left.b
     );
 
     // Draw the lines for the square
-    for( int n = 0; n < Square::sides; n++ )
+    for( int n = 0; n < Polygon::sides; n++ )
         this->lines[n].draw( true );
 
 }
 
 void Polygon::invertColor() {
 
-    this->origin.r = abs( this->origin.r - 1 );
-    this->origin.g = abs( this->origin.g - 1 );
-    this->origin.b = abs( this->origin.b - 1 );
+    this->upper_left.r = abs( this->upper_left.r - 1 );
+    this->upper_left.g = abs( this->upper_left.g - 1 );
+    this->upper_left.b = abs( this->upper_left.b - 1 );
 
     // update colors of the polygon's lines
     // TODO: this fails for some reason, buttons color does not get updated
     // on cick
     // for( int n = 0; n < this->sides; n++ )
-    //     this->lines[n].updateColor( &this->origin );
+    //     this->lines[n].updateColor( &this->upper_left );
     
+}
+
+void Polygon::click() {
+    cout << "poly click" << endl;
+}
+
+void Polygon::click( Point pnt ) {
+    cout << "poly click" << endl;
+}
+
+void Polygon::click( float x, float y ) {
+    cout << "poly click" << endl;
 }
 
 
@@ -201,6 +255,15 @@ void Polygon::invertColor() {
 /**
     Rect class
 **/
+Rect::Rect() {
+
+    this->upper_left = Point( 0, 0 );
+    this->width = 1;
+    this->height = 1;
+    this->setUpLines();
+
+}
+
 Rect::Rect( float _x, float _y, float _width, float _height ) {
 
     this->upper_left = Point( _x, _y );
@@ -227,9 +290,9 @@ bool Rect::contains( Point point ) {
     float max_distance = 0;
 
     if( angle_d > 45 )
-        max_distance = this->width / cos( angle_r );
+        max_distance = abs( this->width / cos( angle_r ) );
     else if( angle_d < 45 )
-        max_distance = this->height / sin( angle_r );
+        max_distance = abs( this->height / sin( angle_r ) );
     else
         max_distance = sqrt( 
             this->width * this->width +
@@ -239,6 +302,10 @@ bool Rect::contains( Point point ) {
     float x = framed.x * framed.x;
     float y = framed.y * framed.y;
     float actual_distance = sqrt( x + y );
+
+    cout << "angle: d=" << angle_d << " r=" << angle_r << endl;
+    cout << "actual_distance: " << actual_distance << endl;
+    cout << "max_distance: " << max_distance << endl;
 
     return actual_distance <= max_distance;
 
@@ -250,8 +317,85 @@ bool Rect::contains( float x, float y ) {
 
 }
 
-void Rect::Rect setUpLines() {
+void Rect::draw() const {
 
+    // Set the vertex color to be whatever we stored in the point
+    glColor3f(
+        this->upper_left.r, 
+        this->upper_left.g, 
+        this->upper_left.b
+    );
+
+    // cout << "rect draw" << endl;
+
+    // Draw the lines for the square
+    for( int n = 0; n < Rect::sides; n++ )
+        this->lines[n].draw( true );
+
+}
+
+void Rect::setUpLines() {
+
+    Point * left_pnt = new Point( 
+        this->upper_left.x,
+        this->upper_left.y
+    );
+
+    Point * right_point = new Point( 
+        this->upper_left.x + this->width,
+        this->upper_left.y - this->height
+    );
+
+    // top line
+    this->lines[0] = Line( left_pnt,
+        new Point( 
+            this->upper_left.x + this->width,
+            this->upper_left.y
+        )
+    );
+
+    // left line
+    this->lines[1] = Line( left_pnt,
+        new Point( 
+            this->upper_left.x,
+            this->upper_left.y - this->height
+        ) 
+    );
     
+    // right line
+    this->lines[2] = Line( right_point,
+        new Point( 
+            right_point->x,
+            right_point->y + this->height
+        )
+    );
+    
+    // bottom line
+    this->lines[3] = Line( right_point,
+        new Point( 
+            this->upper_left.x,
+            this->upper_left.y - this->height
+        ) 
+    );
+
+}
+
+void Rect::click() {
+
+    cout << "rect click" << endl;
+
+}
+
+void Rect::click( Point pnt ) {
+
+    cout << "rect click" << "( " << pnt.getX();
+    cout << ", " << pnt.getY() << " )" << endl;
+
+}
+
+void Rect::click( float x, float y ) {
+
+    cout << "rect click" << "( " << x;
+    cout << ", " << y << " )" << endl;
 
 }

@@ -2,12 +2,19 @@
 #define MYCODE
 
 
+// #include <iostream>
+// #include "GlutApp.h"
+// #include <cmath>
+
+
 class Shape {
+    protected:
+        static const bool clickable = false;
 
     public:
         Shape();
         void invertColor();
-        virtual void draw() const;
+        virtual void draw() const = 0;
         ~Shape();
 
 };
@@ -33,6 +40,10 @@ class Point : public Shape {
         float distance ( Point * ) const;
         void draw() const;
         void invertColor();
+        float getX() const;
+        float getY() const;
+        void setX( float );
+        void setY( float );
 
 };
 
@@ -61,8 +72,8 @@ class Line : public Shape {
         Line();
         Line( Point *, Point * );
         Line( Point *, float, Direction );
-        void draw();
-        void draw( Point * );
+        void draw() const;
+        void draw( Point * ) const;
         void draw( bool ) const;
         void updateColor( Point * );
         ~Line();
@@ -72,16 +83,21 @@ class Line : public Shape {
 class Polygon : public Shape {
     protected:
         Point center;
-        Point origin;    // top left corner
+        Point upper_left;    // top left corner
         float length;
         static const int sides = 0;
         Line lines[sides];
-        virtual void setUpLines();
+        virtual void setUpLines() = 0;
 
     public:
         Polygon();
         void draw();
         void invertColor();
+        virtual bool contains( Point ) = 0;
+        virtual bool contains( float, float ) = 0;
+        virtual void click();
+        virtual void click( float, float );
+        virtual void click( Point );
 
 };
 
@@ -89,7 +105,9 @@ class Polygon : public Shape {
 class Rect : public Polygon {
 
     protected:
+        static const bool clickable = true;
         static const int sides = 4;
+        void setUpLines();
 
     private:
         Point upper_left;
@@ -97,10 +115,14 @@ class Rect : public Polygon {
         float height;
 
     public:
+        Rect();
         Rect( float, float, float, float );
         bool contains( Point );
-        bool contains( float x, float y );
+        bool contains( float, float );
         void draw() const;
+        void click();
+        void click( float, float );
+        void click( Point );
 
 };
 

@@ -4,6 +4,24 @@ App::App(const char* label, int x, int y, int w, int h): GlutApp(label, x, y, w,
     // Initialize state variables
     mx = 0.0;
     my = 0.0;
+    this->mouse = Point( mx, my );
+
+    Rect * rect = new Rect( 0, 0, 0.25, 0.25 );
+    this->addPolygon( rect );
+
+}
+
+void App::addShape( Shape * shape ) {
+
+    this->shapes.push_front( shape );
+
+}
+
+void App::addPolygon( Polygon * poly ) {
+
+    this->polygons.push_front( poly );
+    this->shapes.push_front( poly );
+
 }
 
 void App::draw() {
@@ -12,7 +30,7 @@ void App::draw() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     // Set background color to black
-    glClearColor(0.0, 0.0, 0.0, 1.0);
+    glClearColor(1.0, 1.0, 1.0, 1.0);
     
     // Set up the transformations stack
     glMatrixMode(GL_MODELVIEW);
@@ -43,6 +61,10 @@ void App::draw() {
     glVertex2f(mx, my + 0.05f);
     
     glEnd();
+
+    // draw our shapes
+    for( int n = 0; n < this->shapes.size(); n++ )
+        this->shapes[n]->draw();
     
     // We have been drawing everything to the back buffer
     // Swap the buffers to see the result of what we drew
@@ -54,6 +76,20 @@ void App::mouseDown(float x, float y){
     // Update app state
     mx = x;
     my = y;
+
+    mouse.setX( x );
+    mouse.setY( y );
+
+    Polygon * poly;
+    // detect if mouse clicked any rects
+    for( int n = 0; n < this->polygons.size(); n++ ) {
+        
+        poly = this->polygons[n];
+        if( poly->contains( mouse ) )
+            poly->click( mouse );
+
+    }
+    
     
     // Redraw the scene
     redraw();
