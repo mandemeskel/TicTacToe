@@ -70,6 +70,7 @@ class Line : public Shape {
         float length;
         
         Line();
+        Line( float, float, float, float );
         Line( Point *, Point * );
         Line( Point *, float, Direction );
         void draw() const;
