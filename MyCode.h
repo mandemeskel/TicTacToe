@@ -87,7 +87,7 @@ class Polygon : public Shape {
         Point upper_left;    // top left corner
         float length;
         static const int sides = 0;
-        Line lines[sides];
+        Line * lines;
         virtual void setUpLines() = 0;
 
     public:
@@ -103,6 +103,7 @@ class Polygon : public Shape {
 };
 
 
+// TODO: create destructor to clean lines its elements
 class Rect : public Polygon {
 
     protected:
@@ -124,7 +125,7 @@ class Rect : public Polygon {
         void click();
         void click( float, float );
         void click( Point );
-
+        
 };
 
 

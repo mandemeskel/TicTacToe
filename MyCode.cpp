@@ -266,6 +266,7 @@ Rect::Rect() {
     this->upper_left = Point( 0, 0 );
     this->width = 0.1;
     this->height = 0.1;
+    this->lines = new Line[Rect::sides];
     this->setUpLines();
 
 }
@@ -275,6 +276,7 @@ Rect::Rect( float _x, float _y, float _width, float _height ) {
     this->upper_left = Point( _x, _y );
     this->width = _width;
     this->height = _height;
+    this->lines = new Line[Rect::sides];
     this->setUpLines();
 
 }
@@ -288,15 +290,21 @@ bool Rect::contains( Point point ) {
         point.x - this->upper_left.x,
         point.y - this->upper_left.y
     );
-    double angle_r = abs( atan2( 
+    // double angle_r = abs( atan2( 
+    //     (double)framed.y, 
+    //     (double)framed.x 
+    // ) );
+    double angle_r = atan2( 
         (double)framed.y, 
         (double)framed.x 
-    ) );
-    double angle_d = abs( angle_r * 180 / M_PI );
+    );
     float max_distance = 0;
+    // TODO: remove this later
+    double angle_d = abs( angle_r * 180 / M_PI );
 
+    // TODO: replace with M_PI2
     if( angle_d > 45 )
-        max_distance = abs( this->width / cos( angle_r ) );
+        max_distance = abs( this->width / sin( angle_r ) );
     else if( angle_d < 45 )
         max_distance = abs( this->height / cos( angle_r ) );
     else
@@ -311,7 +319,7 @@ bool Rect::contains( Point point ) {
 
     cout << endl;
     cout << "angle: d=" << angle_d << " r=" << angle_r << endl;
-    // cout << "actual_distance: " << actual_distance << endl;
+    cout << "actual_distance: " << actual_distance << endl;
     cout << "max_distance: " << max_distance << endl;
     cout << "width: " << this->width << endl;
     cout << "height: " << this->height << endl;
@@ -355,8 +363,8 @@ void Rect::setUpLines() {
         this->upper_left.y - this->height
     );
 
-    cout << "width: " << this->width << endl;
-    cout << "height: " << this->height << endl;
+    // cout << "width: " << this->width << endl;
+    // cout << "height: " << this->height << endl;
 
     // top line
     this->lines[0] = Line( 
@@ -366,8 +374,8 @@ void Rect::setUpLines() {
         this->upper_left.getY()
     );
 
-    cout << "width: " << this->width << endl;
-    cout << "height: " << this->height << endl;
+    // cout << "width: " << this->width << endl;
+    // cout << "height: " << this->height << endl;
 
     // left line
     this->lines[1] = Line( left_pnt,
@@ -393,8 +401,9 @@ void Rect::setUpLines() {
         ) 
     );
 
-    cout << "width: " << this->width << endl;
-    cout << "height: " << this->height << endl;
+    // cout << "width: " << this->width << endl;
+    // cout << "height: " << this->height << endl;
+
 }
 
 void Rect::click() {
