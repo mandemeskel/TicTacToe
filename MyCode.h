@@ -24,6 +24,11 @@ class Shape {
 // A point data structure
 class Point : public Shape {
 
+    // friend class Line;
+    // friend class Polygon;
+    // friend class Rect;
+
+    // private:
     public:
         // The coordinates of the point
         float x;
@@ -34,6 +39,7 @@ class Point : public Shape {
         float g;
         float b;
 
+    public:
         Point();
         Point( float, float );
         Point(float x, float y, float r, float g, float b);

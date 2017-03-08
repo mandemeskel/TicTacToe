@@ -318,49 +318,29 @@ Rect::Rect( float _x, float _y, float _width, float _height ) {
 }
 
 bool Rect::contains( Point point ) {
-    
-    if( point.x < this->upper_left.x || point.y > this->upper_left.y )
-        return false;
+    float min_x = this->upper_left.getX();
+    float max_y = this->upper_left.getY();
+    float max_x, min_y;
 
-    Point framed = Point( 
-        point.x - this->upper_left.x,
-        point.y - this->upper_left.y
-    );
-    // double angle_r = abs( atan2( 
-    //     (double)framed.y, 
-    //     (double)framed.x 
-    // ) );
-    double angle_r = atan2( 
-        (double)framed.y, 
-        (double)framed.x 
-    );
-    float max_distance = 0;
-    // TODO: remove this later
-    double angle_d = abs( angle_r * 180 / M_PI );
+    max_x = min_x + this->width;
 
-    // TODO: replace with M_PI2
-    if( angle_d > 45 )
-        max_distance = abs( this->width / sin( angle_r ) );
-    else if( angle_d < 45 )
-        max_distance = abs( this->height / cos( angle_r ) );
-    else
-        max_distance = sqrt( 
-            this->width * this->width +
-            this->height * this->height 
-        );
-
-    float x = framed.x * framed.x;
-    float y = framed.y * framed.y;
-    float actual_distance = sqrt( x + y );
+    min_y = max_y - this->height;
 
     cout << endl;
-    cout << "angle: d=" << angle_d << " r=" << angle_r << endl;
-    cout << "actual_distance: " << actual_distance << endl;
-    cout << "max_distance: " << max_distance << endl;
-    cout << "width: " << this->width << endl;
-    cout << "height: " << this->height << endl;
+    cout << "min_x: " << min_x << endl;
+    cout  << "max_y: " <<  max_y << endl;
+    cout  << "max_x: " <<  max_x << endl;
+    cout  << "min_y: " <<  min_y << endl;
+    cout  << "getX: " <<  point.getX() << endl;
+    cout  << "getY: " <<  point.getY() << endl;
 
-    return actual_distance <= max_distance;
+    if( point.getX() < min_x || point.getY() > max_y )
+        return false;
+
+    if( point.getX() > max_x ||  point.getY() < min_y )
+        return false;    
+
+    return true;
 
 }
 
@@ -444,11 +424,9 @@ void Rect::setUpLines() {
 
 void Rect::click() {
 
-    cout << "rect click" << endl;
+    // cout << "rect click" << endl;
     if( this->onClick )
         this->onClick( this );
-
-    
 
 }
 
@@ -463,8 +441,8 @@ void Rect::click( Point pnt ) {
 
 void Rect::click( float x, float y ) {
 
-    cout << "rect click" << "( " << x;
-    cout << ", " << y << " )" << endl;
+    // cout << "rect click" << "( " << x;
+    // cout << ", " << y << " )" << endl;
     if( this->onClick )
         this->onClick( this );
 
