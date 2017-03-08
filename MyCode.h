@@ -44,6 +44,12 @@ class Point : public Shape {
         float getY() const;
         void setX( float );
         void setY( float );
+        float getR() const;
+        float getG() const;
+        float getB() const;
+        void setR( float );
+        void setG( float );
+        void setB( float );
 
 };
 
@@ -83,8 +89,6 @@ class Line : public Shape {
 
 class Polygon : public Shape {
     protected:
-        Point center;
-        Point upper_left;    // top left corner
         float length;
         static const int sides = 0;
         Line * lines;
@@ -94,6 +98,8 @@ class Polygon : public Shape {
         // void (*onClick)();
 
     public:
+        Point center;
+        Point upper_left;    // top left corner
         Polygon();
         void draw();
         // void invertColor();

@@ -105,6 +105,30 @@ void Point::setY( float _y ) {
     this->y = _y;
 }
 
+float Point::getR() const {
+    return this->r;
+}
+
+float Point::getG() const {
+    return this->g;
+}
+
+float Point::getB() const {
+    return this->b;
+}
+
+void Point::setR( float val ) {
+    this->r = val;
+}
+
+void Point::setG( float val ) {
+    this->g = val;
+}
+
+void Point::setB( float val ) {
+    this->b = val;
+}
+
 
 /**
     Line class

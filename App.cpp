@@ -1,5 +1,13 @@
 #include "App.h"
 
+void invertColor( Polygon * poly ) {
+
+    poly->upper_left.setR( abs( poly->upper_left.getR() - 1 ) );
+    poly->upper_left.setG( abs( poly->upper_left.getG() - 1 ) );
+    poly->upper_left.setB( abs( poly->upper_left.getB() - 1 ) );
+    
+}
+
 
 App::App(const char* label, int x, int y, int w, int h): GlutApp(label, x, y, w, h){
     // Initialize state variables
@@ -8,7 +16,8 @@ App::App(const char* label, int x, int y, int w, int h): GlutApp(label, x, y, w,
     this->mouse = Point( mx, my );
 
     Rect * rect = new Rect( 0, 0, 0.25, 0.25 );
-    rect->setOnClick( &Polygon::invertColor );
+    // rect->setOnClick( &Polygon::invertColor );
+    rect->setOnClick( &invertColor );
     this->addPolygon( rect );
 
 }
