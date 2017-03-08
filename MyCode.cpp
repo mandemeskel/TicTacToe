@@ -230,17 +230,22 @@ void Polygon::draw() {
 
 }
 
-void Polygon::invertColor() {
+// void Polygon::invertColor() {
 
-    this->upper_left.r = abs( this->upper_left.r - 1 );
-    this->upper_left.g = abs( this->upper_left.g - 1 );
-    this->upper_left.b = abs( this->upper_left.b - 1 );
+//     this->upper_left.r = abs( this->upper_left.r - 1 );
+//     this->upper_left.g = abs( this->upper_left.g - 1 );
+//     this->upper_left.b = abs( this->upper_left.b - 1 );
+    
+// }
 
-    // update colors of the polygon's lines
-    // TODO: this fails for some reason, buttons color does not get updated
-    // on cick
-    // for( int n = 0; n < this->sides; n++ )
-    //     this->lines[n].updateColor( &this->upper_left );
+void Polygon::invertColor( Polygon * poly ) {
+
+    poly->upper_left.r = abs( poly->upper_left.r - 1 );
+    poly->upper_left.g = abs( poly->upper_left.g - 1 );
+    poly->upper_left.b = abs( poly->upper_left.b - 1 );
+    // cout << "inverted color: " << poly->upper_left.r << endl;
+    // cout << poly << endl;
+    // cout << &poly->upper_left << endl;
     
 }
 
@@ -256,6 +261,11 @@ void Polygon::click( float x, float y ) {
     cout << "poly click" << endl;
 }
 
+void Polygon::setOnClick( void (*callback)( Polygon *) ) {
+
+    this->onClick = callback;
+
+}
 
 
 /**
@@ -267,6 +277,7 @@ Rect::Rect() {
     this->width = 0.1;
     this->height = 0.1;
     this->lines = new Line[Rect::sides];
+    this->onClick = NULL;
     this->setUpLines();
 
 }
@@ -277,6 +288,7 @@ Rect::Rect( float _x, float _y, float _width, float _height ) {
     this->width = _width;
     this->height = _height;
     this->lines = new Line[Rect::sides];
+    this->onClick = NULL;
     this->setUpLines();
 
 }
@@ -409,6 +421,10 @@ void Rect::setUpLines() {
 void Rect::click() {
 
     cout << "rect click" << endl;
+    if( this->onClick )
+        this->onClick( this );
+
+    
 
 }
 
@@ -416,6 +432,8 @@ void Rect::click( Point pnt ) {
 
     cout << "rect click" << "( " << pnt.getX();
     cout << ", " << pnt.getY() << " )" << endl;
+    if( this->onClick )
+        this->onClick( this );
 
 }
 
@@ -423,5 +441,8 @@ void Rect::click( float x, float y ) {
 
     cout << "rect click" << "( " << x;
     cout << ", " << y << " )" << endl;
+    if( this->onClick )
+        this->onClick( this );
 
 }
+

@@ -89,16 +89,21 @@ class Polygon : public Shape {
         static const int sides = 0;
         Line * lines;
         virtual void setUpLines() = 0;
+        void (*onClick)( Polygon * );
+        // void (*onClick)( Point * );
+        // void (*onClick)();
 
     public:
         Polygon();
         void draw();
-        void invertColor();
+        // void invertColor();
+        static void invertColor( Polygon * );
         virtual bool contains( Point ) = 0;
         virtual bool contains( float, float ) = 0;
         virtual void click();
         virtual void click( float, float );
         virtual void click( Point );
+        virtual void setOnClick( void (*callback)( Polygon *) );
 
 };
 
@@ -110,9 +115,11 @@ class Rect : public Polygon {
         static const bool clickable = true;
         static const int sides = 4;
         void setUpLines();
+        // redfine already existing member allocated it
+        // in different memory spot
+        // Point upper_left;
 
     private:
-        Point upper_left;
         float width;
         float height;
 
@@ -125,7 +132,6 @@ class Rect : public Polygon {
         void click();
         void click( float, float );
         void click( Point );
-        
 };
 
 

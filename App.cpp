@@ -1,5 +1,6 @@
 #include "App.h"
 
+
 App::App(const char* label, int x, int y, int w, int h): GlutApp(label, x, y, w, h){
     // Initialize state variables
     mx = 0.0;
@@ -7,6 +8,7 @@ App::App(const char* label, int x, int y, int w, int h): GlutApp(label, x, y, w,
     this->mouse = Point( mx, my );
 
     Rect * rect = new Rect( 0, 0, 0.25, 0.25 );
+    rect->setOnClick( &Polygon::invertColor );
     this->addPolygon( rect );
 
 }
@@ -19,7 +21,9 @@ void App::addShape( Shape * shape ) {
 
 void App::addPolygon( Polygon * poly ) {
 
+    // for click detection
     this->polygons.push_front( poly );
+    // for drawing
     this->shapes.push_front( poly );
 
 }
