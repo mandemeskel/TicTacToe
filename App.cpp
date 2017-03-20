@@ -19,21 +19,9 @@ App::App(const char* label, int x, int y, int w, int h): GlutApp(label, x, y, w,
     this->mouse = Point( mx, my );
     Rect * rect;
 
-    // for( int n = 1; n < 10; n++ ) {
-
-    //     rect = new Rect( 
-    //         n%10, n%10, n%2/10, n%3/10    
-    //     );
-    //     // rect->setOnClick( &Polygon::invertColor );
-    //     rect->setOnClick( &invertColor );
-    //     this->addPolygon( rect );
-
-    // }
-
     rect = new Rect( 
         -0.9, 0, 0.2, 0.3    
     );
-    // rect->setOnClick( &Polygon::invertColor );
     rect->setOnClick( &invertColor );
     this->addPolygon( rect );
 
@@ -41,14 +29,12 @@ App::App(const char* label, int x, int y, int w, int h): GlutApp(label, x, y, w,
     rect = new Rect( 
         0, 0, 0.1, 0.1    
     );
-    // rect->setOnClick( &Polygon::invertColor );
     rect->setOnClick( &invertColor );
     this->addPolygon( rect );
 
     rect = new Rect( 
         -0.9, -0.7, 0.3, 0.2    
     );
-    // rect->setOnClick( &Polygon::invertColor );
     rect->setOnClick( &invertColor );
     this->addPolygon( rect );
 
@@ -56,14 +42,12 @@ App::App(const char* label, int x, int y, int w, int h): GlutApp(label, x, y, w,
     rect = new Rect( 
         0.6, 0, 0.25, 0.25    
     );
-    // rect->setOnClick( &Polygon::invertColor );
     rect->setOnClick( &invertColor );
     this->addPolygon( rect );
 
     rect = new Rect( 
         0, -0.7, 0.5, 0.1    
     );
-    // rect->setOnClick( &Polygon::invertColor );
     rect->setOnClick( &invertColor );
     this->addPolygon( rect );
 
@@ -71,7 +55,6 @@ App::App(const char* label, int x, int y, int w, int h): GlutApp(label, x, y, w,
     rect = new Rect( 
         0, 0.9, 0.1, 0.5    
     );
-    // rect->setOnClick( &Polygon::invertColor );
     rect->setOnClick( &invertColor );
     this->addPolygon( rect );
 
@@ -79,14 +62,12 @@ App::App(const char* label, int x, int y, int w, int h): GlutApp(label, x, y, w,
     rect = new Rect( 
         -0.95, 0.95, 0.5, 0.5    
     );
-    // rect->setOnClick( &Polygon::invertColor );
     rect->setOnClick( &invertColor );
     this->addPolygon( rect );
 
     rect = new Rect( 
         0.45, 0.95, 0.5, 0.7    
     );
-    // rect->setOnClick( &Polygon::invertColor );
     rect->setOnClick( &invertColor );
     this->addPolygon( rect );
 
