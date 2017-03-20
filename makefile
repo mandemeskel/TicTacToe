@@ -29,8 +29,8 @@ $(PROGRAM):$(OBJECTS)
 
 clean:
 	$(RM) $(OBJECTS) $(DEPENDS)
-	$(RM) $(PROGRAM)
-	$(RM) *~
+	# $(RM) $(PROGRAM)
+	# $(RM) *~
 
 #######################################################################
 
