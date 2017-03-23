@@ -272,6 +272,14 @@ void Polygon::click( float x, float y ) {
     cout << "poly click" << endl;
 }
 
+void Polygon::setColor( Point * color ) {
+
+    this->upper_left.r = color->r;
+    this->upper_left.g = color->g;
+    this->upper_left.b = color->b;
+
+}
+
 void Polygon::setOnClick( void (*callback)( Polygon *) ) {
 
     this->onClick = callback;

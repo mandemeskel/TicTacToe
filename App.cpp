@@ -25,51 +25,7 @@ App::App(const char* label, int x, int y, int w, int h): GlutApp(label, x, y, w,
     rect->setOnClick( &invertColor );
     this->addPolygon( rect );
 
-    
-    rect = new Rect( 
-        0, 0, 0.1, 0.1    
-    );
-    rect->setOnClick( &invertColor );
-    this->addPolygon( rect );
 
-    rect = new Rect( 
-        -0.9, -0.7, 0.3, 0.2    
-    );
-    rect->setOnClick( &invertColor );
-    this->addPolygon( rect );
-
-    
-    rect = new Rect( 
-        0.6, 0, 0.25, 0.25    
-    );
-    rect->setOnClick( &invertColor );
-    this->addPolygon( rect );
-
-    rect = new Rect( 
-        0, -0.7, 0.5, 0.1    
-    );
-    rect->setOnClick( &invertColor );
-    this->addPolygon( rect );
-
-    
-    rect = new Rect( 
-        0, 0.9, 0.1, 0.5    
-    );
-    rect->setOnClick( &invertColor );
-    this->addPolygon( rect );
-
-
-    rect = new Rect( 
-        -0.95, 0.95, 0.5, 0.5    
-    );
-    rect->setOnClick( &invertColor );
-    this->addPolygon( rect );
-
-    rect = new Rect( 
-        0.45, 0.95, 0.5, 0.7    
-    );
-    rect->setOnClick( &invertColor );
-    this->addPolygon( rect );
 
 }
 
