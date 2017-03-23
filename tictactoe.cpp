@@ -58,11 +58,45 @@ void Player::move( Board * board ) {
     
 }
 
-// returns AI move
+// calculates and returns AI move
 Tile * Player::aiMove( Board * board ) {
 
 }
 
+
+
+Board::Board() {
+
+    // create tiles
+    for( int n = 0; n < 9; n++ )
+        this->tiles[n] = new Tile();
+
+    // draw menu buttons
+    this->menu();
+
+}
+
+Board::~Board() {
+
+    for( int n = 0; n < 9; n++ )
+        delete this->tiles[n];
+
+    for( int n = 0; n < 4; n++ )
+        delete this->menu[n];
+
+    delete this->menu_p1;
+    delete this->menu_p2;
+    delete this->menu_pvp;
+    delete this->menu_pve;
+
+    if( this->player1 != NULL ) {
+
+        delete this->player1;
+        delete this->player2;
+
+    }
+    
+}
 
 // checks for winner by using the current tile in play
 bool Board::checkForWinner( Tile * tile ) const {
@@ -190,6 +224,13 @@ void Board::click( Tile * tile ) {
         this->current_player.move( this );
 }
 
+// draw menu to control game
+void Board::menu() {
 
+    this->menu_p1 = new Rect( -0.5, -0.5, 0.25, 0.25 );
+    this->menu_p2 = new Rect( -0.25, -0.5, 0.25, 0.25 );
+    this->menu_pvp = new Rect( 0.0, -0.5, 0.25, 0.25 );
+    this->menu_pve = new Rect( 0.25, -0.5, 0.25, 0.25 );
 
+}
 
