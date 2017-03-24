@@ -280,6 +280,14 @@ void Polygon::setColor( Point * color ) {
 
 }
 
+void Polygon::setColor( float red, float green, float blue ) {
+
+    this->upper_left.r = red;
+    this->upper_left.g = green;
+    this->upper_left.b = blue;
+
+}
+
 void Polygon::setOnClick( void (*callback)( Polygon *) ) {
 
     this->onClick = callback;

@@ -1,8 +1,12 @@
 #include "MyCode.h"
+#include "tictactoe.h"
+#include <iostream>
 
 using namespace std;
 
 
+
+/** Tile Class **/
 int Tile::tiles = 0;
 
 Tile::Tile() {
@@ -14,38 +18,47 @@ Player * Tile::getOwner() const {
 }
 
 bool Tile::hasOwner() const {
-    return this->owner != NULL;
+    return this->owner != 0;
 }
 
 void Tile::setOwner( Player * player ) {
     this->owner = player;
-    this->setColor( player->getColor() )
+    this->rect->setColor( player->getColor() );
 }
 
-void reset() {
-    this->owner = NULL;
-    this->setColor( &Point( 0, 0, 0 ) );
+void Tile::reset() {
+    this->owner = 0;
+    this->rect->setColor( 0.0f, 0.0f, 0.0f );
+}
+
+bool Tile::contains( float x, float y ) {
+    return rect->contains( x, y );
+}
+
+void Tile::draw() const {
+    this->rect->draw();
 }
 
 
 
+/** Player Class **/ 
 Player::Player( bool human, bool turn ) {
-    this->is_huma = human;
+    this->is_human = human;
     this->is_turn = turn;
-    this->color = new Point( 0, 0, 0 );
+    this->color = new Point( 0, 0, 0, 0, 0 );
 }
 
 Player::~Player() {
     delete this->color;
 }
 
-void setColor( float red, float green, float blue ) {
+void Player::setColor( float red, float green, float blue ) {
     this->color->r = red;
     this->color->g = green;
     this->color->b = blue;
 }
 
-Point * getColor() const {
+Point * Player::getColor() const {
     return this->color;
 }
 
@@ -65,31 +78,38 @@ Tile * Player::aiMove( Board * board ) {
 
 
 
+/** Board Class **/
 Board::Board() {
 
     // create tiles
     for( int n = 0; n < 9; n++ )
         this->tiles[n] = new Tile();
 
-    // draw menu buttons
+    // create menu buttons
     this->menu();
+
+    // number of moves
+    this->moves = 0;
+
+    // status of game
+    this->start = true;
 
 }
 
 Board::~Board() {
 
+    // free tiles
     for( int n = 0; n < 9; n++ )
         delete this->tiles[n];
 
-    for( int n = 0; n < 4; n++ )
-        delete this->menu[n];
-
+    // free menu
     delete this->menu_p1;
     delete this->menu_p2;
     delete this->menu_pvp;
     delete this->menu_pve;
 
-    if( this->player1 != NULL ) {
+    // free players
+    if( this->player1 != 0 ) {
 
         delete this->player1;
         delete this->player2;
@@ -107,67 +127,60 @@ bool Board::checkForWinner( Tile * tile ) const {
     if( tile->hasOwner() == false ) return false;
 
     // check 1st row
-    if( id >= 0 && id <= 2 ) {
+    if( id <= 2 ) {
 
-        winner = ( tiles[0]->get0wner() == tiles[1]->get0wner()  
-        && tiles[0]->get0wner() == tiles[2]->get0wner() );
+        winner = ( tiles[0]->getOwner() == tiles[1]->getOwner()  
+        && tiles[0]->getOwner() == tiles[2]->getOwner() );
         
     // 2nd row
-    } else if( id >= 3 && id <= 5 ) {
+    } else if( id <= 5 ) {
 
-        winner = ( tiles[3]->get0wner() == tiles[4]->get0wner()  
-        && tiles[3]->get0wner() == tiles[5]->get0wner() );
+        winner = ( tiles[3]->getOwner() == tiles[4]->getOwner()  
+        && tiles[3]->getOwner() == tiles[5]->getOwner() );
     
     // 3rd row
     } else {
 
-        winner = ( tiles[6]->get0wner() == tiles[7]->get0wner()  
-        && tiles[6]->get0wner() == tiles[8]->get0wner() );
+        winner = ( tiles[6]->getOwner() == tiles[7]->getOwner()  
+        && tiles[6]->getOwner() == tiles[8]->getOwner() );
 
     }
 
 
     // check 1st collumn
-    if( (id % 3) == 0 ) ) {
+    if( (id % 3) == 0 ) {
 
-        winner = ( tiles[0]->get0wner() == tiles[3]->get0wner()  
-        && tiles[0]->get0wner() == tiles[6]->get0wner() );
+        winner = ( tiles[0]->getOwner() == tiles[3]->getOwner()  
+        && tiles[0]->getOwner() == tiles[6]->getOwner() );
         
     // 2nd collumn
     } else if( (id % 3) == 1 ) {
 
-        winner = ( tiles[1]->get0wner() == tiles[4]->get0wner()  
-        && tiles[1]->get0wner() == tiles[7]->get0wner() );
+        winner = ( tiles[1]->getOwner() == tiles[4]->getOwner()  
+        && tiles[1]->getOwner() == tiles[7]->getOwner() );
     
     // 3rd collumn
     } else {
 
-        winner = ( tiles[2]->get0wner() == tiles[5]->get0wner()  
-        && tiles[2]->get0wner() == tiles[8]->get0wner() );
+        winner = ( tiles[2]->getOwner() == tiles[5]->getOwner()  
+        && tiles[2]->getOwner() == tiles[8]->getOwner() );
 
     }
 
 
     // check diagnols
-    switch( id ) {
-        // backward diagnol 
-        case 0:
-        case 4:
-        case 8:
+    // backward diagnol 
+    if( (id % 4) == 0 ) {
+    
+        winner = ( tiles[0]->getOwner() == tiles[4]->getOwner()  
+        && tiles[0]->getOwner() == tiles[8]->getOwner() );
 
-            winner = ( tiles[0]->get0wner() == tiles[4]->get0wner()  
-        && tiles[0]->get0wner() == tiles[8]->get0wner() );
+    // forward diagnol
+    } else if( (id % 2) == 0 ) {
+    
+        winner = ( tiles[2]->getOwner() == tiles[4]->getOwner()  
+        && tiles[2]->getOwner() == tiles[6]->getOwner() );
 
-        break;
-        // forward diagnol
-        case 2:
-        case 4:
-        case 6:
-
-            winner = ( tiles[2]->get0wner() == tiles[4]->get0wner()  
-        && tiles[2]->get0wner() == tiles[6]->get0wner() );
-
-        break;
     }
 
 
@@ -183,7 +196,7 @@ void Board::click( float x, float y ) {
     Tile tile;
     for( int ntile = 0; ntile < 9; ntile++ ) {
 
-        tile = this->tiles[ ntile ];
+        tile = *(this->tiles[ ntile ]);
         if( !tile.contains( x, y ) ) continue;
         this->click( &tile );    
 
@@ -193,44 +206,95 @@ void Board::click( float x, float y ) {
 
 // handels when tile is selected
 void Board::click( Tile * tile ) {
-    if( tile->hasOwner() ) continue;
 
-    // update board
-    tile->setOwner( this->current_player );
+    // bad move, tile has an owner
+    if( tile->hasOwner() )  {
 
-    // change palyer
-    if( this->current_player == this->player1 )
-        this->current_player = this->player2;
-    else
-        this->current_player = this->player2;
+        cout << "tile has an owner, illegal move" << endl;
 
-    // updates number of moves and checks for a winner
-    this->moves++;
+    } else {
 
-    // game has ended
-    if( this->moves == 9 ) {
+        // update board
+        tile->setOwner( this->current_player );
 
-        this->end = true;
-        this->checkForWinner( tile );
+        // change palyer
+        if( this->current_player == this->player1 )
+            this->current_player = this->player2;
+        else
+            this->current_player = this->player2;
 
-    // check for a winner
-    } else if( this->moves > 3 && this->checkForWinner( tile ); ) {
-        
-        this->end = true;
+        // updates number of moves and checks for a winner
+        this->moves++;
 
-    // continue with game
-    } else 
-        // set current player to move, also activates AI
-        this->current_player.move( this );
+        // game has ended
+        if( this->moves == 9 ) {
+
+            this->start = false;
+            this->checkForWinner( tile );
+
+        // check for a winner
+        } else if( this->moves > 2 && this->checkForWinner( tile ) ) {
+            
+            this->start = false;
+
+        // continue with game
+        } else 
+            // set current player to move, also activates AI
+            this->current_player->move( this );
+
+    }
 }
 
-// draw menu to control game
+// create menu to control game
 void Board::menu() {
-
     this->menu_p1 = new Rect( -0.5, -0.5, 0.25, 0.25 );
     this->menu_p2 = new Rect( -0.25, -0.5, 0.25, 0.25 );
     this->menu_pvp = new Rect( 0.0, -0.5, 0.25, 0.25 );
     this->menu_pve = new Rect( 0.25, -0.5, 0.25, 0.25 );
+}
+
+// handle clicks for menu
+void Board::menuClick( float x, float y ) {
+    // create pvp game
+    if( this->menu_pvp->contains( x, y ) ) {
+
+        this->mode = PVP;
+        cout << "PvP" << endl;
+
+    // create pv3 game
+    } else if( this->menu_pve->contains( x, y ) ) {
+
+        this->mode = PVE;
+        cout << "PvE" << endl;
+
+    }
+
+    // start game if it has not
+    if( this->start == false ) this->startGame();
 
 }
 
+// draw menu to control game
+void Board::menuDraw() const {
+    this->menu_p1->draw();
+    this->menu_p2->draw();
+    this->menu_pvp->draw();
+    this->menu_pve->draw();
+}
+
+// draw board 
+void Board::draw() const {
+    // draw tiles
+    for( int n = 0; n < 9; n++ )
+        this->tiles[n]->draw();
+
+    // draw menu
+    this->menuDraw();
+}
+
+// starrt the game, create players 
+void Board::startGame() {
+
+    this->start = true;
+
+}

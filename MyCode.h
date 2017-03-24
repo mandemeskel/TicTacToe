@@ -116,6 +116,8 @@ class Polygon : public Shape {
         virtual void click( float, float );
         virtual void click( Point );
         virtual void setOnClick( void (*callback)( Polygon *) );
+        void setColor( Point * );
+        void setColor( float, float, float );
 
 };
 
