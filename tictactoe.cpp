@@ -292,9 +292,93 @@ void Board::draw() const {
     this->menuDraw();
 }
 
-// starrt the game, create players 
+// start the game, create players 
 void Board::startGame() {
 
     this->start = true;
+
+}
+
+// checks if person clicked on the board 
+bool Board::contains( float x_, float y_ ) {
+
+    bool clicked = false;
+
+    // check if the mouse was within the board
+    if( this->x < x_ && (this->x + this->len) > x_ ) {
+
+        if( this->y < y_ && (this->y + this->len) > y_ ) {
+
+            clicked = true;
+
+        }
+
+    }
+
+    // check if the mouse clicked a specific tile
+    if( clicked ) {
+        Tile * tile;
+
+        for( int n = 0; n < this->num_tiles; n++ ) {
+
+            tile = this->tiles[ n ];
+
+            if( !tile->contains( x, y ) ) continue;
+
+            // call click function
+            tile->click();
+
+            // check if legal move
+            if( this->isLegalMove( this->current_player, tile ) ) {
+
+                tile->setOwner( this->current_player );
+
+                // check for a winnger 
+                if( this->checkForWinner( tile ) )
+                    this->delcareWinner();
+                else
+                    // change turn to next player
+                    this->changeTurn();
+
+            }
+
+        }
+
+    }
+
+    return clicked;
+
+}
+
+
+// checks if move is legal
+bool isLegalMove( Player * player, Tile * tile ) {
+
+    bool legal = false;
+
+    if( !tile->hasOwner() )
+        legal = true;
+
+    return legal;
+
+}
+
+
+// end current player's turn and go to next player 
+void changeTurn() {
+    
+    this->moves++;
+
+    this->current_player->endTurn();
+    
+    if( this->current_player == this->player1 ) 
+        
+        this->current_player = this->player2;
+    
+    else
+        
+        this->current_player = this->player1;  
+
+    this->current_player->startTurn();
 
 }
