@@ -199,6 +199,9 @@ Board::~Board() {
 
 // checks for winner by using the current tile in play
 bool Board::checkForWinner( Tile * tile ) const {
+
+    cout << "checkForWinner " << tile->id << endl;
+
     bool winner;
     int id = tile->id;
 
@@ -225,6 +228,7 @@ bool Board::checkForWinner( Tile * tile ) const {
 
     }
 
+    if( winner ) return true;
 
     // check 1st collumn
     if( (id % 3) == 0 ) {
@@ -246,6 +250,8 @@ bool Board::checkForWinner( Tile * tile ) const {
 
     }
 
+    if( winner ) return true;
+
 
     // check diagnols
     // backward diagnol 
@@ -262,8 +268,7 @@ bool Board::checkForWinner( Tile * tile ) const {
 
     }
 
-
-    if( winner ) cout << "winning tile: " << id << endl;
+    // if( winner ) cout << "winning tile: " << id << endl;
 
     return winner;
 
@@ -272,6 +277,7 @@ bool Board::checkForWinner( Tile * tile ) const {
 // checks if the board is clicked
 // NOT USED
 bool Board::click( float mouse_x, float mouse_y ) {
+
     bool clicked = false;
     Tile * tile;
 
@@ -527,7 +533,7 @@ Tile * Board::tileClicked( float mouse_x, float mouse_y ) {
             cout << "clicked tile owner " << tile->getOwner() << endl;
             cout << "clicked current player " << this->current_player << endl;
 
-            // check for a winnger 
+            // check for a winner 
             if( this->checkForWinner( tile ) )
                 this->declareWinner( tile->getOwner() );
             else
