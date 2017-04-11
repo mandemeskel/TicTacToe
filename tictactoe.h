@@ -2,10 +2,12 @@
 #define TICTACTOE
 
 #include "MyCode.h"
+#include <string>
 
 using namespace std;
 
 
+class Button;
 class Tile;
 class Player;
 class Board;
@@ -17,14 +19,30 @@ enum GameMode {
 };
 
 
+
+class Button : public Rect {
+
+    private:
+        string label;
+
+    public:
+        Button( float, float, float, float, string );
+        // ~Button();
+
+        void draw() const;
+
+};
+
+
+
 class Tile : public Rect {
 
     private:
         static int tiles;
         Player * owner;
-        float x;
-        float y;
-        float width;
+        // float x;
+        // float y;
+        // float width;
         // Rect * rect;
 
     public:

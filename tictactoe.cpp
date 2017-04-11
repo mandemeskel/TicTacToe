@@ -1,9 +1,48 @@
+#if defined WIN32
+#include <freeglut.h>
+#elif defined __APPLE__
+#include <GLUT/glut.h>
+#else
+#include <GL/freeglut.h>
+#endif
+
 #include "MyCode.h"
 #include "tictactoe.h"
 #include <iostream>
 
 using namespace std;
 
+
+/** Button Class **/
+Button::Button( float x_, float y_, float width, float height, string label ):Rect( x_, y_, width, height ) {
+    this->label = label;
+}
+
+// BUGG: Does not draw label
+// http://waltermilner.com/joglblogl/simpleText.htm
+// http://freeglut.sourceforge.net/docs/api.php#FontRendering
+void Button::draw() const {
+
+    // Draw the label
+    // http://www-etud.iro.umontreal.ca/~clavetsi/api/glut/glutStrokeCharacter.html
+    // glEnable( GL_BLEND );
+    // glEnable( GL_LINE_SMOOTH );
+    glPushMatrix();
+    glColor3f( 0, 0, 0 );
+    glLineWidth( 2 );
+    glTranslatef( this->upper_left.x, this->upper_left.y, 0 );
+    for( int n = 0; n < this->label.length(); n++ )
+        glutStrokeCharacter( 
+            GLUT_STROKE_ROMAN,  
+            this->label[n]
+        );
+    glPopMatrix();
+
+    // Draw the lines for the button
+    for( int n = 0; n < Rect::sides; n++ )
+        this->lines[n].draw( true );
+
+}
 
 
 /** Tile Class **/
@@ -14,9 +53,9 @@ Tile::Tile() {
 }
 
 Tile::Tile( float x_, float y_, float width ):Rect( x_, y_, width, width ) {
-    this->x = x_;
-    this->y = y_;
-    this->width = width;
+    // this->x = x_;
+    // this->y = y_;
+    // this->width = width;
     this->id = Tile::tiles++;
 }
 
@@ -280,10 +319,10 @@ void Board::gameTileClick( Tile * tile ) {
 
 // create menu to control game
 void Board::menu() {
-    this->menu_p1 = new Rect( -0.5, -0.5, 0.25, 0.25 );
-    this->menu_p2 = new Rect( -0.25, -0.5, 0.25, 0.25 );
-    this->menu_pvp = new Rect( 0.0, -0.5, 0.25, 0.25 );
-    this->menu_pve = new Rect( 0.25, -0.5, 0.25, 0.25 );
+    this->menu_p1 = new Button( -0.5, -0.5, 0.25, 0.15, "P1" );
+    this->menu_p2 = new Button( -0.25, -0.5, 0.25, 0.15, "P2" );
+    this->menu_pvp = new Button( 0.0, -0.5, 0.25, 0.15, "PVP" );
+    this->menu_pve = new Button( 0.25, -0.5, 0.25, 0.15, "PVE" );
 }
 
 // handle clicks for menu
