@@ -29,16 +29,25 @@ class Tile : public Rect {
 
     public:
         int id;
+        
         Tile();
-        // TODO
+        
+        // sets tile's owner, which also change's tiles color
         void setOwner( Player * );
+        
+        // returns tile's owner
         Player * getOwner() const;
+        
+        // resets state of the tile
         void reset();
-        void draw() const;
-        // TODO
+        
+        // void draw() const;
+        
+        // checks if the tile has an owner
         bool hasOwner() const;
-        // TODO
-        bool contains( float, float );
+        
+        // bool contains( float, float );
+        
         // TODO
         void click() const;
 
@@ -55,17 +64,32 @@ class Player {
 
     public:
         Player( bool, bool );
+        
         ~Player();
+
+        // TODO:
         void move( Board * );
+        
+        // TODO: used?
         Tile * aiMove( Board * );
+        
         // void setTurn( bool );
+        
         // bool getTurn() const;
+        
+        // DONE
         void setColor( float, float, float );
+        
+        // DONE, returns rgb color of player
         Point * getColor() const;
-        // TODO
+        
+        // DONE
         void startTurn();
-        // TODO
+        
+        // DONE
         void endTurn();
+        
+        // DONE
         void reset();
 
 };
@@ -93,23 +117,42 @@ class Board {
 
     public:
         Board();
+        
         ~Board();
-        // TODO
+        
+        // DONE, checks for winner of game by checking if
+        // the passed tile is in a row, collumn, or diagnol
+        // of three tiles
         bool checkForWinner( Tile * ) const;
-        void click( float, float );
-        void click( Tile * );
+        
+        // checks if the board is clicked, NOT DRY, contains
+        bool click( float, float );
+        
+        // handles click on a game tile
+        void gameTileClick( Tile * );
+        
         void draw() const;
+        
         void endTurn();
+        
         void startGame();
+        
         void menu();
+        
         void menuClick( float, float );
+        
         void menuDraw() const;
-        void promptUser();
+        
+        // void promptUser();
+        
         void reset();
-        // checks if person clicked on the board 
+        
+        // checks if person clicked on the board, NOT DRY, click
         bool contains( float, float );
+        
         // checks if move is legal
         bool isLegalMove( Player *, Tile * );
+
         // end current player's turn and go to next player 
         void changeTurn();
 

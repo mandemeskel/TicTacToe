@@ -23,21 +23,21 @@ bool Tile::hasOwner() const {
 
 void Tile::setOwner( Player * player ) {
     this->owner = player;
-    this->rect->setColor( player->getColor() );
+    this->setColor( player->getColor() );
 }
 
 void Tile::reset() {
     this->owner = 0;
-    this->rect->setColor( 0.0f, 0.0f, 0.0f );
+    this->setColor( 0.0f, 0.0f, 0.0f );
 }
 
-bool Tile::contains( float x, float y ) {
-    return rect->contains( x, y );
-}
+// bool Tile::contains( float x, float y ) {
+//     return rect->contains( x, y );
+// }
 
-void Tile::draw() const {
-    this->rect->draw();
-}
+// void Tile::draw() const {
+//     this->rect->draw();
+// }
 
 
 
@@ -74,6 +74,22 @@ void Player::move( Board * board ) {
 // calculates and returns AI move
 Tile * Player::aiMove( Board * board ) {
 
+}
+
+void Player::startTurn() {
+    this->is_turn = true;
+}
+
+void Player::endTurn() {
+    this->is_turn = false;
+}
+
+void Player::reset() {
+    this->is_turn = false;
+    this->is_human = false;
+    this->color->r = 0;
+    this->color->g = 0;
+    this->color->b = 0;
 }
 
 
@@ -190,22 +206,28 @@ bool Board::checkForWinner( Tile * tile ) const {
 
 }
 
-// handels user click on board
-void Board::click( float x, float y ) {
-
+// checks if the board is clicked
+bool Board::click( float x, float y ) {
+    bool clicked = false;
     Tile tile;
+
     for( int ntile = 0; ntile < 9; ntile++ ) {
 
         tile = *(this->tiles[ ntile ]);
+        
         if( !tile.contains( x, y ) ) continue;
-        this->click( &tile );    
+        
+        this->gameTileClick( &tile );    
+        clicked = true;
 
     }
+
+    return clicked;
 
 }
 
 // handels when tile is selected
-void Board::click( Tile * tile ) {
+void Board::gameTileClick( Tile * tile ) {
 
     // bad move, tile has an owner
     if( tile->hasOwner() )  {
@@ -352,7 +374,7 @@ bool Board::contains( float x_, float y_ ) {
 
 
 // checks if move is legal
-bool isLegalMove( Player * player, Tile * tile ) {
+bool Board::isLegalMove( Player * player, Tile * tile ) {
 
     bool legal = false;
 
@@ -365,7 +387,7 @@ bool isLegalMove( Player * player, Tile * tile ) {
 
 
 // end current player's turn and go to next player 
-void changeTurn() {
+void Board::changeTurn() {
     
     this->moves++;
 
