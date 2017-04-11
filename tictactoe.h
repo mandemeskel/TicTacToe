@@ -133,9 +133,9 @@ class Board {
         GameMode mode;
         int moves;
         bool game_started;
-        float x;
-        float y;
-        float len;
+        // float board_x;
+        // float board_y;
+        // float len;
         // Rect * board;
         // const static int num_menu_btns = 4;
         // Buttons * menu_btns;

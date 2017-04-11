@@ -271,7 +271,7 @@ bool Board::checkForWinner( Tile * tile ) const {
 
 // checks if the board is clicked
 // NOT USED
-bool Board::click( float x, float y ) {
+bool Board::click( float mouse_x, float mouse_y ) {
     bool clicked = false;
     Tile * tile;
 
@@ -279,7 +279,7 @@ bool Board::click( float x, float y ) {
 
         tile = this->tiles[ ntile ];
         
-        if( !tile->contains( x, y ) ) continue;
+        if( !tile->contains( mouse_x, mouse_y ) ) continue;
         
         this->gameTileClick( tile );    
         clicked = true;
@@ -416,18 +416,6 @@ bool Board::contains( float mouse_x, float mouse_y ) {
 
     cout << "clicked " << mouse_x << " " << mouse_y << endl;
 
-    // TODO: why do we need this
-    // check if the mouse was within the board
-    // if( this->x < mouse_x && (this->x + this->len) > mouse_x ) {
-
-    //     if( this->y < mouse_y && (this->y + this->len) > mouse_y ) {
-
-    //         clicked = true;
-
-    //     }
-
-    // }
-
     // check if the mouse clicked a specific tile
     if( clicked && this->game_started ) {
 
@@ -522,7 +510,7 @@ Tile * Board::tileClicked( float mouse_x, float mouse_y ) {
 
         tile = this->tiles[ n ];
 
-        if( !tile->contains( x, y ) ) continue;
+        if( !tile->contains( mouse_x, mouse_y ) ) continue;
 
         cout << "clicked " << tile->id << endl;
 
