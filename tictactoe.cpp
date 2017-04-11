@@ -13,6 +13,13 @@ Tile::Tile() {
     this->id = Tile::tiles++;
 }
 
+Tile::Tile( float x_, float y_, float width ):Rect( x_, y_, width, width ) {
+    this->x = x_;
+    this->y = y_;
+    this->width = width;
+    this->id = Tile::tiles++;
+}
+
 Player * Tile::getOwner() const {
     return this->owner;
 }
@@ -67,13 +74,13 @@ void Player::move( Board * board ) {
 
     // let ai move
     if( !this->is_human )
-        board->click( this->aiMove( board ) );
+        board->gameTileClick( this->aiMove( board ) );
     
 }
 
 // calculates and returns AI move
 Tile * Player::aiMove( Board * board ) {
-
+    return board->getTile( 4 );
 }
 
 void Player::startTurn() {
@@ -99,7 +106,11 @@ Board::Board() {
 
     // create tiles
     for( int n = 0; n < 9; n++ )
-        this->tiles[n] = new Tile();
+        this->tiles[n] = new Tile(
+            -0.40 + 0.3 * (n%3),      // x
+             0.40 - 0.3 * (int)(n/3), // y
+             0.20                   // width
+        );
 
     // create menu buttons
     this->menu();
@@ -306,12 +317,17 @@ void Board::menuDraw() const {
 
 // draw board 
 void Board::draw() const {
+
     // draw tiles
     for( int n = 0; n < 9; n++ )
         this->tiles[n]->draw();
 
     // draw menu
     this->menuDraw();
+
+    // draw the board
+    // this->board->draw();
+
 }
 
 // start the game, create players 
@@ -347,8 +363,8 @@ bool Board::contains( float x_, float y_ ) {
 
             if( !tile->contains( x, y ) ) continue;
 
-            // call click function
-            tile->click();
+            // TODO: call click function
+            // tile->click();
 
             // check if legal move
             if( this->isLegalMove( this->current_player, tile ) ) {
@@ -357,7 +373,7 @@ bool Board::contains( float x_, float y_ ) {
 
                 // check for a winnger 
                 if( this->checkForWinner( tile ) )
-                    this->delcareWinner();
+                    this->declareWinner( tile->getOwner() );
                 else
                     // change turn to next player
                     this->changeTurn();
@@ -402,5 +418,14 @@ void Board::changeTurn() {
         this->current_player = this->player1;  
 
     this->current_player->startTurn();
+
+}
+
+
+// make it obivous who won the game 
+void Board::declareWinner( Player * player ) {
+
+    for( int n = 0; n < this->num_tiles; n++ )
+        this->tiles[n]->setColor( player->getColor() );
 
 }

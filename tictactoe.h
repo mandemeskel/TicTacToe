@@ -22,8 +22,8 @@ class Tile : public Rect {
     private:
         static int tiles;
         Player * owner;
-        // float x;
-        // float y;
+        float x;
+        float y;
         float width;
         // Rect * rect;
 
@@ -31,6 +31,8 @@ class Tile : public Rect {
         int id;
         
         Tile();
+
+        Tile( float, float, float );
         
         // sets tile's owner, which also change's tiles color
         void setOwner( Player * );
@@ -99,7 +101,7 @@ class Player {
 class Board {
 
     private:
-        const int num_tiles = 9
+        const static int num_tiles = 9;
         Tile * tiles[ num_tiles ];
         Rect * menu_p1;
         Rect * menu_p2;
@@ -114,6 +116,7 @@ class Board {
         float x;
         float y;
         float len;
+        // Rect * board;
 
     public:
         Board();
@@ -155,6 +158,19 @@ class Board {
 
         // end current player's turn and go to next player 
         void changeTurn();
+
+        // returns tile by id provided
+        Tile * getTile( int id ) {
+            
+            if( id < 0 || id > 8 )
+                return 0;
+
+            return this->tiles[ id ];
+
+        }
+
+        // needed?
+        void declareWinner( Player * );
 
 };
 

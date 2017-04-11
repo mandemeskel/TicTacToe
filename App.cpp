@@ -19,13 +19,14 @@ App::App(const char* label, int x, int y, int w, int h): GlutApp(label, x, y, w,
     this->mouse = Point( mx, my );
     Rect * rect;
 
-    rect = new Rect( 
-        -0.9, 0, 0.2, 0.3    
-    );
-    rect->setOnClick( &invertColor );
-    this->addPolygon( rect );
+    // rect = new Rect( 
+    //     -0.9, 0, 0.2, 0.3    
+    // );
+    // rect->setOnClick( &invertColor );
+    // this->addPolygon( rect );
 
-
+    // create tictactoe board
+    this->board = new Board();
 
 }
 
@@ -85,6 +86,9 @@ void App::draw() {
     // draw our shapes
     for( int n = 0; n < this->shapes.size(); n++ )
         this->shapes[n]->draw();
+
+    // draw board
+    this->board->draw();
     
     // We have been drawing everything to the back buffer
     // Swap the buffers to see the result of what we drew
