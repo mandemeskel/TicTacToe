@@ -112,6 +112,8 @@ class Player {
         // DONE
         void reset();
 
+        void setPlayerToAi( bool );
+
 };
 
 
@@ -121,20 +123,22 @@ class Board {
     private:
         const static int num_tiles = 9;
         Tile * tiles[ num_tiles ];
-        Rect * menu_p1;
-        Rect * menu_p2;
-        Rect * menu_pvp;
-        Rect * menu_pve;
+        Button * menu_p1;
+        Button * menu_p2;
+        Button * menu_pvp;
+        Button * menu_pve;
         Player * player1;
         Player * player2;
         Player * current_player;
         GameMode mode;
         int moves;
-        bool start;
+        bool game_started;
         float x;
         float y;
         float len;
         // Rect * board;
+        // const static int num_menu_btns = 4;
+        // Buttons * menu_btns;
 
     public:
         Board();
@@ -156,16 +160,20 @@ class Board {
         
         void endTurn();
         
-        void startGame();
+        // DONE
+        void startGame( GameMode );
         
         void menu();
         
-        void menuClick( float, float );
+        // DONE, check if menu buttons are clicked and handles click
+        bool menuContains( float, float );
         
+        // DONE
         void menuDraw() const;
         
         // void promptUser();
         
+        // DONE
         void reset();
         
         // checks if person clicked on the board, NOT DRY, click
@@ -178,17 +186,19 @@ class Board {
         void changeTurn();
 
         // returns tile by id provided
-        Tile * getTile( int id ) {
-            
-            if( id < 0 || id > 8 )
-                return 0;
+        Tile * getTile( int );
 
-            return this->tiles[ id ];
-
-        }
+        // check and handel tile clicks
+        Tile * tileClicked( float, float );
 
         // needed?
         void declareWinner( Player * );
+
+        // menu button click handler
+        // void startPVPGame();
+
+        // menu button click handler
+        // void startPVEGame();
 
 };
 

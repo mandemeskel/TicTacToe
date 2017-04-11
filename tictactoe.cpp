@@ -69,7 +69,10 @@ bool Tile::hasOwner() const {
 
 void Tile::setOwner( Player * player ) {
     this->owner = player;
-    this->setColor( player->getColor() );
+    if( player == 0 )
+        this->setColor( 0.0f, 0.0f, 0.0f );
+    else
+        this->setColor( player->getColor() );
 }
 
 void Tile::reset() {
@@ -133,9 +136,13 @@ void Player::endTurn() {
 void Player::reset() {
     this->is_turn = false;
     this->is_human = false;
-    this->color->r = 0;
-    this->color->g = 0;
-    this->color->b = 0;
+    // this->color->r = 0;
+    // this->color->g = 0;
+    // this->color->b = 0;
+}
+
+void Player::setPlayerToAi( bool is_ai ) {
+    this->is_human = !is_ai;
 }
 
 
@@ -154,12 +161,18 @@ Board::Board() {
     // create menu buttons
     this->menu();
 
+    // creates players
+    this->player1 = new Player( true, true );
+    this->player1->setColor( 0.2, 0.6, 1 );
+    this->player2 = new Player( true, true );
+    this->player2->setColor( 1, 0.6, 0.2 );
+
     // number of moves
     this->moves = 0;
 
-    // status of game
-    this->start = true;
-
+    // status of game, don't start game on init
+    this->game_started = false;
+    
 }
 
 Board::~Board() {
@@ -257,17 +270,18 @@ bool Board::checkForWinner( Tile * tile ) const {
 }
 
 // checks if the board is clicked
+// NOT USED
 bool Board::click( float x, float y ) {
     bool clicked = false;
-    Tile tile;
+    Tile * tile;
 
     for( int ntile = 0; ntile < 9; ntile++ ) {
 
-        tile = *(this->tiles[ ntile ]);
+        tile = this->tiles[ ntile ];
         
-        if( !tile.contains( x, y ) ) continue;
+        if( !tile->contains( x, y ) ) continue;
         
-        this->gameTileClick( &tile );    
+        this->gameTileClick( tile );    
         clicked = true;
 
     }
@@ -277,6 +291,7 @@ bool Board::click( float x, float y ) {
 }
 
 // handels when tile is selected
+// NOT USED
 void Board::gameTileClick( Tile * tile ) {
 
     // bad move, tile has an owner
@@ -301,13 +316,13 @@ void Board::gameTileClick( Tile * tile ) {
         // game has ended
         if( this->moves == 9 ) {
 
-            this->start = false;
+            this->game_started = false;
             this->checkForWinner( tile );
 
         // check for a winner
         } else if( this->moves > 2 && this->checkForWinner( tile ) ) {
             
-            this->start = false;
+            this->game_started = false;
 
         // continue with game
         } else 
@@ -326,23 +341,29 @@ void Board::menu() {
 }
 
 // handle clicks for menu
-void Board::menuClick( float x, float y ) {
+bool Board::menuContains( float x, float y ) {
+
+    bool clicked = false;
+
+    cout << "menuContains " << x << " " << y << endl;
+
     // create pvp game
     if( this->menu_pvp->contains( x, y ) ) {
 
-        this->mode = PVP;
+        this->startGame( PVP );
+        clicked = true;
         cout << "PvP" << endl;
 
-    // create pv3 game
+    // create pve game
     } else if( this->menu_pve->contains( x, y ) ) {
 
-        this->mode = PVE;
+        this->startGame( PVE );
+        clicked = true;
         cout << "PvE" << endl;
 
     }
 
-    // start game if it has not
-    if( this->start == false ) this->startGame();
+    return clicked;
 
 }
 
@@ -370,63 +391,62 @@ void Board::draw() const {
 }
 
 // start the game, create players 
-void Board::startGame() {
+void Board::startGame( GameMode game_mode ) {
+    
+    this->reset();
+    this->game_started = true;
+    this->mode = game_mode;
 
-    this->start = true;
+    this->player1->startTurn();
+    this->current_player = this->player1;
+    this->player1->setPlayerToAi( false );
+
+    this->player2->endTurn();
+    if( game_mode == PVP )
+        this->player2->setPlayerToAi( false );
+    else
+        this->player2->setPlayerToAi( true );
 
 }
 
 // checks if person clicked on the board 
-bool Board::contains( float x_, float y_ ) {
+bool Board::contains( float mouse_x, float mouse_y ) {
 
-    bool clicked = false;
+    bool clicked = true;
 
+    cout << "clicked " << mouse_x << " " << mouse_y << endl;
+
+    // TODO: why do we need this
     // check if the mouse was within the board
-    if( this->x < x_ && (this->x + this->len) > x_ ) {
+    // if( this->x < mouse_x && (this->x + this->len) > mouse_x ) {
 
-        if( this->y < y_ && (this->y + this->len) > y_ ) {
+    //     if( this->y < mouse_y && (this->y + this->len) > mouse_y ) {
 
-            clicked = true;
+    //         clicked = true;
 
-        }
+    //     }
+
+    // }
+
+    // check if the mouse clicked a specific tile
+    if( clicked && this->game_started ) {
+
+        // check and handel tile clicks
+        this->tileClicked( mouse_x, mouse_y );
 
     }
 
-    // check if the mouse clicked a specific tile
+    // check if menu is clicked
     if( clicked ) {
-        Tile * tile;
 
-        for( int n = 0; n < this->num_tiles; n++ ) {
-
-            tile = this->tiles[ n ];
-
-            if( !tile->contains( x, y ) ) continue;
-
-            // TODO: call click function
-            // tile->click();
-
-            // check if legal move
-            if( this->isLegalMove( this->current_player, tile ) ) {
-
-                tile->setOwner( this->current_player );
-
-                // check for a winnger 
-                if( this->checkForWinner( tile ) )
-                    this->declareWinner( tile->getOwner() );
-                else
-                    // change turn to next player
-                    this->changeTurn();
-
-            }
-
-        }
+        // check if menu buttons clicked
+        this->menuContains( mouse_x, mouse_y );
 
     }
 
     return clicked;
 
 }
-
 
 // checks if move is legal
 bool Board::isLegalMove( Player * player, Tile * tile ) {
@@ -439,7 +459,6 @@ bool Board::isLegalMove( Player * player, Tile * tile ) {
     return legal;
 
 }
-
 
 // end current player's turn and go to next player 
 void Board::changeTurn() {
@@ -460,11 +479,76 @@ void Board::changeTurn() {
 
 }
 
-
 // make it obivous who won the game 
 void Board::declareWinner( Player * player ) {
 
     for( int n = 0; n < this->num_tiles; n++ )
-        this->tiles[n]->setColor( player->getColor() );
+        this->tiles[n]->setOwner( player );
 
+}
+
+// returns tile by id provided
+Tile * Board::getTile( int id ) {
+    
+    if( id < 0 || id > 8 )
+        return 0;
+
+    return this->tiles[ id ];
+
+}
+
+void Board::reset() {
+
+    for( int n = 0; n < this->num_tiles; n++ )
+        this->tiles[n]->reset();
+
+    this->player1->reset();
+    this->player2->reset();
+
+    this->game_started = false;
+    this->moves = false;
+
+}
+
+// check and handel tile clicks
+Tile * Board::tileClicked( float mouse_x, float mouse_y ) {
+
+    // only check if game has started
+    if(this->game_started == false ) return 0;
+
+    Tile * tile;
+
+    for( int n = 0; n < this->num_tiles; n++ ) {
+
+        tile = this->tiles[ n ];
+
+        if( !tile->contains( x, y ) ) continue;
+
+        cout << "clicked " << tile->id << endl;
+
+        // TODO: call click function
+        // tile->click();
+
+        // check if legal move
+        if( this->isLegalMove( this->current_player, tile ) ) {
+
+            cout << "clicked " << "legal move" << endl;
+
+            tile->setOwner( this->current_player );
+
+            cout << "clicked tile owner " << tile->getOwner() << endl;
+            cout << "clicked current player " << this->current_player << endl;
+
+            // check for a winnger 
+            if( this->checkForWinner( tile ) )
+                this->declareWinner( tile->getOwner() );
+            else
+                // change turn to next player
+                this->changeTurn();
+
+        }
+
+    }
+
+    return tile;
 }
