@@ -12,7 +12,7 @@
 
 using namespace std;
 
-bool DEBUGGING = true;
+bool DEBUGGING = false;
 
 
 /** Button Class **/
@@ -291,21 +291,24 @@ bool Board::menuContains( float x, float y ) {
 
     bool clicked = false;
 
-    cout << "menuContains " << x << " " << y << endl;
+    if( DEBUGGING )
+        cout << "menuContains " << x << " " << y << endl;
 
     // create pvp game
     if( this->menu_pvp->contains( x, y ) ) {
 
         this->startGame( PVP );
         clicked = true;
-        cout << "PvP" << endl;
+        if( DEBUGGING )
+            cout << "PvP" << endl;
 
     // create pve game
     } else if( this->menu_pve->contains( x, y ) ) {
 
         this->startGame( PVE );
         clicked = true;
-        cout << "PvE" << endl;
+        if( DEBUGGING )
+            cout << "PvE" << endl;
 
     }
 
@@ -478,7 +481,8 @@ Tile * Board::tileClicked( float mouse_x, float mouse_y ) {
 
         if( !tile->contains( mouse_x, mouse_y ) ) continue;
 
-        cout << "tileClicked " << tile->id << endl;
+        if( DEBUGGING )
+            cout << "tileClicked " << tile->id << endl;
 
         // TODO: call click function
         // tile->click();
@@ -486,12 +490,17 @@ Tile * Board::tileClicked( float mouse_x, float mouse_y ) {
         // check if legal move
         if( this->isLegalMove( this->current_player, tile ) ) {
 
-            cout << "tileClicked " << "legal move" << endl;
+            if( DEBUGGING )
+                cout << "tileClicked " << "legal move" << endl;
 
             tile->setOwner( this->current_player );
 
-            cout << "tileClicked tile owner " << tile->getOwner() << endl;
-            cout << "tileClicked current player " << this->current_player << endl;
+            if( DEBUGGING ) {
+
+                cout << "tileClicked tile owner " << tile->getOwner() << endl;
+                cout << "tileClicked current player " << this->current_player << endl;
+            
+            }
 
             // check for a winner 
             if( this->checkForWinner( tile ) )
