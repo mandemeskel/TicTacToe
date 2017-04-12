@@ -55,9 +55,6 @@ Tile::Tile() {
 }
 
 Tile::Tile( float x_, float y_, float width ):Rect( x_, y_, width, width ) {
-    // this->x = x_;
-    // this->y = y_;
-    // this->width = width;
     this->id = Tile::tiles++;
 }
 
@@ -129,7 +126,6 @@ void Player::startTurn( Board * board ) {
         
         Tile * tile = this->aiMove( board );
         const Point * point = tile->getCenter();
-        // const Point * point = this->aiMove( board )->getCenter();
         board->tileClicked( 
             point->x,
             point->y
@@ -209,8 +205,9 @@ Board::~Board() {
 
 // checks for winner by using the current tile in play
 bool Board::checkForWinner( Tile * tile ) const {
-
-    cout << "checkForWinner " << tile->id << endl;
+    
+    if( DEBUGGING )
+        cout << "checkForWinner " << tile->id << endl;
 
     bool winner;
     int id = tile->id;
