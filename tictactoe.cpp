@@ -27,12 +27,13 @@ void Button::draw() const {
 
     // Draw the label
     // http://www-etud.iro.umontreal.ca/~clavetsi/api/glut/glutStrokeCharacter.html
-    // glEnable( GL_BLEND );
-    // glEnable( GL_LINE_SMOOTH );
     glPushMatrix();
+    glEnable( GL_BLEND );
+    glEnable( GL_LINE_SMOOTH );
     glColor3f( 0, 0, 0 );
     glLineWidth( 2 );
-    glTranslatef( this->upper_left.x, this->upper_left.y, 0 );
+    glTranslatef( this->upper_left.x + (this->width/8), this->upper_left.y - (this->height/1.25), 0 );
+    glScalef( 1/1250.0, 1/1250.0, 1/1250.0 ); // need to scale text for it to fit in
     for( int n = 0; n < this->label.length(); n++ )
         glutStrokeCharacter( 
             GLUT_STROKE_ROMAN,  

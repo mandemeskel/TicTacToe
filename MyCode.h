@@ -131,11 +131,6 @@ class Rect : public Polygon {
         static const bool clickable = true;
         static const int sides = 4;
         void setUpLines();
-        // redfine already existing member allocated it
-        // in different memory spot
-        // Point upper_left;
-
-    private:
         float width;
         float height;
 
