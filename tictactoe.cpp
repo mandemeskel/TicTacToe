@@ -107,10 +107,6 @@ Point * Player::getColor() const {
     return this->color;
 }
 
-// moves player, NOT USED
-void Player::move( Board * board ) {
-}
-
 void Player::startTurn( Board * board ) {
     
     if( DEBUGGING )
@@ -281,70 +277,6 @@ bool Board::checkForWinner( Tile * tile ) const {
 
 }
 
-// checks if the board is clicked
-// NOT USED
-bool Board::click( float mouse_x, float mouse_y ) {
-
-    bool clicked = false;
-    Tile * tile;
-
-    for( int ntile = 0; ntile < 9; ntile++ ) {
-
-        tile = this->tiles[ ntile ];
-        
-        if( !tile->contains( mouse_x, mouse_y ) ) continue;
-        
-        this->gameTileClick( tile );    
-        clicked = true;
-
-    }
-
-    return clicked;
-
-}
-
-// handels when tile is selected
-// NOT USED
-void Board::gameTileClick( Tile * tile ) {
-
-    // bad move, tile has an owner
-    if( tile->hasOwner() )  {
-
-        cout << "tile has an owner, illegal move" << endl;
-
-    } else {
-
-        // update board
-        tile->setOwner( this->current_player );
-
-        // change palyer
-        if( this->current_player == this->player1 )
-            this->current_player = this->player2;
-        else
-            this->current_player = this->player2;
-
-        // updates number of moves and checks for a winner
-        this->moves++;
-
-        // game has ended
-        if( this->moves == 9 ) {
-
-            this->game_started = false;
-            this->checkForWinner( tile );
-
-        // check for a winner
-        } else if( this->moves > 2 && this->checkForWinner( tile ) ) {
-            
-            this->game_started = false;
-
-        // continue with game
-        } else 
-            // set current player to move, also activates AI
-            this->current_player->move( this );
-
-    }
-}
-
 // create menu to control game
 void Board::menu() {
     this->menu_p1 = new Button( -0.5, -0.5, 0.25, 0.15, "P1" );
@@ -398,9 +330,6 @@ void Board::draw() const {
     // draw menu
     this->menuDraw();
 
-    // draw the board
-    // this->board->draw();
-
 }
 
 // start the game, create players 
@@ -438,7 +367,8 @@ bool Board::contains( float mouse_x, float mouse_y ) {
 
     bool clicked = true;
 
-    cout << "contains " << mouse_x << " " << mouse_y << endl;
+    if( DEBUGGING )
+        cout << "contains " << mouse_x << " " << mouse_y << endl;
 
     if( DEBUGGING && this->current_player != 0 )
         cout << "contains getIsHuman() " << this->current_player->getIsHuman() << endl;
@@ -604,7 +534,7 @@ bool Board::canWin( Tile * tile, Player * player ) {
     tile->setOwner( 0 );
     return winner;
  
- }
+}
 
 // returns the opposing player
 Player * Board::getEnemy( Player * player ) {
@@ -628,6 +558,39 @@ void Board::endGame() {
 
 
 /** AI methods **/
+// calculates and returns AI move
+Tile * Player::aiMove( Board * board ) {
+
+    if( DEBUGGING )
+        cout << "aiMove" << endl;
+
+    Tile * tile;
+    int max = 0;
+    int temp = 0;
+
+    for( int n = 0; n < board->num_tiles; n++ ) {
+
+        temp = this->generateTileValue( board->getTile( n ), board );
+        
+        if( DEBUGGING )
+            cout << "aiMove max_value " << max << " tile " << board->getTile( n )->id << " value " << temp << endl;
+       
+        if( max >= temp ) continue;
+        tile = board->getTile( n );
+        max = temp;
+
+    }
+
+    if( DEBUGGING )
+        cout << "aiMove tile " << tile->id << endl;
+
+    if( DEBUGGING )
+        cout << endl;
+    
+    return tile;
+
+}
+
 // generates tile values ai moves are based on
 int Player::generateTileValue( Tile * tile, Board * board ) {
 
@@ -686,39 +649,6 @@ int Player::generateTileValue( Tile * tile, Board * board ) {
         cout << endl;
 
     return tile_value;
-
-}
-
-// calculates and returns AI move
-Tile * Player::aiMove( Board * board ) {
-
-    if( DEBUGGING )
-        cout << "aiMove" << endl;
-
-    Tile * tile;
-    int max = 0;
-    int temp = 0;
-
-    for( int n = 0; n < board->num_tiles; n++ ) {
-
-        temp = this->generateTileValue( board->getTile( n ), board );
-        
-        if( DEBUGGING )
-            cout << "aiMove max_value " << max << " tile " << board->getTile( n )->id << " value " << temp << endl;
-       
-        if( max >= temp ) continue;
-        tile = board->getTile( n );
-        max = temp;
-
-    }
-
-    if( DEBUGGING )
-        cout << "aiMove tile " << tile->id << endl;
-
-    if( DEBUGGING )
-        cout << endl;
-    
-    return tile;
 
 }
 

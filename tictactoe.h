@@ -40,10 +40,6 @@ class Tile : public Rect {
     private:
         static int tiles;
         Player * owner;
-        // float x;
-        // float y;
-        // float width;
-        // Rect * rect;
 
     public:
         int id;
@@ -61,12 +57,8 @@ class Tile : public Rect {
         // resets state of the tile
         void reset();
         
-        // void draw() const;
-        
         // checks if the tile has an owner
         bool hasOwner() const;
-        
-        // bool contains( float, float );
         
         // TODO
         void click() const;
@@ -89,19 +81,12 @@ class Player {
         Player( bool, bool );
         
         ~Player();
-
-        // TODO:
-        void move( Board * );
         
-        // TODO: used?
+        // returns the tile will move to
         Tile * aiMove( Board * );
 
         // generates tile values ai moves are based on
         int generateTileValue( Tile *, Board * );
-        
-        // void setTurn( bool );
-        
-        // bool getTurn() const;
         
         // DONE
         void setColor( float, float, float );
@@ -145,15 +130,8 @@ class Board {
         GameMode mode;
         int moves;
         bool game_started;
-        // float board_x;
-        // float board_y;
-        // float len;
-        // Rect * board;
-        // const static int num_menu_btns = 4;
-        // Buttons * menu_btns;
 
     public:
-
         Board();
         
         ~Board();
@@ -163,12 +141,6 @@ class Board {
         // of three tiles
         bool checkForWinner( Tile * ) const;
         
-        // checks if the board is clicked, NOT DRY, contains
-        bool click( float, float );
-        
-        // handles click on a game tile
-        void gameTileClick( Tile * );
-        
         void draw() const;
         
         void endTurn();
@@ -176,6 +148,7 @@ class Board {
         // DONE
         void startGame( GameMode );
         
+        // initalizes menu
         void menu();
         
         // DONE, check if menu buttons are clicked and handles click

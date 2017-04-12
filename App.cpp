@@ -104,16 +104,6 @@ void App::mouseDown(float x, float y){
     mouse.setX( x );
     mouse.setY( y );
 
-    // Polygon * poly;
-    // // detect if mouse clicked any rects
-    // for( int n = 0; n < this->polygons.size(); n++ ) {
-        
-    //     poly = this->polygons[n];
-    //     if( poly->contains( mouse ) )
-    //         poly->click( mouse );
-
-    // }
-
     // check for clicks on board
     this->board->contains( x, y );
     
