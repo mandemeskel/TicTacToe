@@ -294,6 +294,24 @@ void Polygon::setOnClick( void (*callback)( Polygon *) ) {
 
 }
 
+const Point * Polygon::getUpperLeft() const {
+    return &( this->upper_left );
+}
+
+const Point * Polygon::getCenter() {
+
+    if( this->center == 0 ) {
+
+        float x = this->upper_left.x + this->length/2;
+        float y = this->upper_left.y - this->length/2;
+        this->center = new Point( x, y );
+
+    }
+
+    return this->center;
+}
+
+
 
 /**
     Rect class
@@ -426,5 +444,18 @@ void Rect::click( float x, float y ) {
     if( this->onClick )
         this->onClick( this );
 
+}
+
+const Point * Rect::getCenter() {
+
+    if( this->center == 0 ) {
+
+        float x = this->upper_left.x + this->width/2;
+        float y = this->upper_left.y - this->height/2;
+        this->center = new Point( x, y );
+
+    }
+
+    return this->center;
 }
 

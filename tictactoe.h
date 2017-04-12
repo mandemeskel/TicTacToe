@@ -71,6 +71,9 @@ class Tile : public Rect {
         // TODO
         void click() const;
 
+        // checks if tile is owned by player
+        bool isOwner( Player * ) const;
+
 };
 
 
@@ -92,6 +95,9 @@ class Player {
         
         // TODO: used?
         Tile * aiMove( Board * );
+
+        // generates tile values ai moves are based on
+        int generateTileValue( Tile *, Board * );
         
         // void setTurn( bool );
         
@@ -104,7 +110,7 @@ class Player {
         Point * getColor() const;
         
         // DONE
-        void startTurn();
+        void startTurn( Board * );
         
         // DONE
         void endTurn();
@@ -112,7 +118,11 @@ class Player {
         // DONE
         void reset();
 
-        void setPlayerToAi( bool );
+        // DONE
+        void setIsHuman( bool );
+
+        // DONE
+        bool getIsHuman() const;
 
 };
 
@@ -120,8 +130,10 @@ class Player {
 
 class Board {
 
-    private:
+    public:
         const static int num_tiles = 9;
+
+    private:
         Tile * tiles[ num_tiles ];
         Button * menu_p1;
         Button * menu_p2;
@@ -141,6 +153,7 @@ class Board {
         // Buttons * menu_btns;
 
     public:
+
         Board();
         
         ~Board();
@@ -171,8 +184,6 @@ class Board {
         // DONE
         void menuDraw() const;
         
-        // void promptUser();
-        
         // DONE
         void reset();
         
@@ -194,11 +205,14 @@ class Board {
         // needed?
         void declareWinner( Player * );
 
-        // menu button click handler
-        // void startPVPGame();
+        // checks if player can win with this tile
+        // Player * canWin( Tile * ) const;
+        bool canWin( Tile *, Player * );
 
-        // menu button click handler
-        // void startPVEGame();
+        // returns the opposing player
+        Player * getEnemy( Player * );
+
+        void endGame();
 
 };
 

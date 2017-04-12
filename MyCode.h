@@ -104,7 +104,7 @@ class Polygon : public Shape {
         // void (*onClick)();
 
     public:
-        Point center;
+        Point * center;
         Point upper_left;    // top left corner
         Polygon();
         void draw();
@@ -118,7 +118,9 @@ class Polygon : public Shape {
         virtual void setOnClick( void (*callback)( Polygon *) );
         void setColor( Point * );
         void setColor( float, float, float );
-
+        virtual const Point * getCenter();
+        virtual const Point * getUpperLeft() const;
+        
 };
 
 
@@ -146,6 +148,7 @@ class Rect : public Polygon {
         void click();
         void click( float, float );
         void click( Point );
+        const Point * getCenter();
 };
 
 

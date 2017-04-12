@@ -12,6 +12,8 @@
 
 using namespace std;
 
+bool DEBUGGING = true;
+
 
 /** Button Class **/
 Button::Button( float x_, float y_, float width, float height, string label ):Rect( x_, y_, width, height ) {
@@ -80,13 +82,10 @@ void Tile::reset() {
     this->setColor( 0.0f, 0.0f, 0.0f );
 }
 
-// bool Tile::contains( float x, float y ) {
-//     return rect->contains( x, y );
-// }
-
-// void Tile::draw() const {
-//     this->rect->draw();
-// }
+// checks if tile is owned by player
+bool Tile::isOwner( Player * player ) const {
+    return this->owner == player;
+}
 
 
 
@@ -111,22 +110,33 @@ Point * Player::getColor() const {
     return this->color;
 }
 
-// moves player
+// moves player, NOT USED
 void Player::move( Board * board ) {
+}
+
+void Player::startTurn( Board * board ) {
+    
+    if( DEBUGGING )
+        cout << "startTurn" << endl;
+    
+    if( DEBUGGING )
+        cout << "startTurn is_human " << this->is_human << endl;
+
+    this->is_turn = true;
 
     // let ai move
-    if( !this->is_human )
-        board->gameTileClick( this->aiMove( board ) );
+    if( !this->is_human ) {
+        
+        Tile * tile = this->aiMove( board );
+        const Point * point = tile->getCenter();
+        // const Point * point = this->aiMove( board )->getCenter();
+        board->tileClicked( 
+            point->x,
+            point->y
+        );
     
-}
+    }
 
-// calculates and returns AI move
-Tile * Player::aiMove( Board * board ) {
-    return board->getTile( 4 );
-}
-
-void Player::startTurn() {
-    this->is_turn = true;
 }
 
 void Player::endTurn() {
@@ -141,8 +151,8 @@ void Player::reset() {
     // this->color->b = 0;
 }
 
-void Player::setPlayerToAi( bool is_ai ) {
-    this->is_human = !is_ai;
+void Player::setIsHuman( bool human ) {
+    this->is_human =  human;
 }
 
 
@@ -398,35 +408,54 @@ void Board::draw() const {
 
 // start the game, create players 
 void Board::startGame( GameMode game_mode ) {
-    
+  
+    if( DEBUGGING )
+        cout << "startGame" << endl;
+      
     this->reset();
     this->game_started = true;
     this->mode = game_mode;
 
-    this->player1->startTurn();
+    this->player1->setIsHuman( true );
     this->current_player = this->player1;
-    this->player1->setPlayerToAi( false );
+  
+    if( DEBUGGING )
+        cout << "startGame current_player->getIsHuman" << this->current_player->getIsHuman() << endl;
 
     this->player2->endTurn();
     if( game_mode == PVP )
-        this->player2->setPlayerToAi( false );
+        this->player2->setIsHuman( true );
     else
-        this->player2->setPlayerToAi( true );
+        this->player2->setIsHuman( false );
+
+    // start players turn
+    this->current_player->startTurn( this );
 
 }
 
 // checks if person clicked on the board 
 bool Board::contains( float mouse_x, float mouse_y ) {
+    
+    if( DEBUGGING )
+        cout << "contains" << endl;
 
     bool clicked = true;
 
-    cout << "clicked " << mouse_x << " " << mouse_y << endl;
+    cout << "contains " << mouse_x << " " << mouse_y << endl;
+
+    if( DEBUGGING && this->current_player != 0 )
+        cout << "contains getIsHuman() " << this->current_player->getIsHuman() << endl;
 
     // check if the mouse clicked a specific tile
-    if( clicked && this->game_started ) {
+    if( this->game_started ) {
 
-        // check and handel tile clicks
-        this->tileClicked( mouse_x, mouse_y );
+        // check and handel tile clicked
+        if( this->current_player != 0 ) {
+
+            if( this->current_player->getIsHuman() )
+                this->tileClicked( mouse_x, mouse_y );
+
+        }
 
     }
 
@@ -469,7 +498,7 @@ void Board::changeTurn() {
         
         this->current_player = this->player1;  
 
-    this->current_player->startTurn();
+    this->current_player->startTurn( this );
 
 }
 
@@ -507,6 +536,9 @@ void Board::reset() {
 // check and handel tile clicks
 Tile * Board::tileClicked( float mouse_x, float mouse_y ) {
 
+    if( DEBUGGING )
+        cout << "tileClicked" << endl;
+
     // only check if game has started
     if(this->game_started == false ) return 0;
 
@@ -518,7 +550,7 @@ Tile * Board::tileClicked( float mouse_x, float mouse_y ) {
 
         if( !tile->contains( mouse_x, mouse_y ) ) continue;
 
-        cout << "clicked " << tile->id << endl;
+        cout << "tileClicked " << tile->id << endl;
 
         // TODO: call click function
         // tile->click();
@@ -526,18 +558,26 @@ Tile * Board::tileClicked( float mouse_x, float mouse_y ) {
         // check if legal move
         if( this->isLegalMove( this->current_player, tile ) ) {
 
-            cout << "clicked " << "legal move" << endl;
+            cout << "tileClicked " << "legal move" << endl;
 
             tile->setOwner( this->current_player );
 
-            cout << "clicked tile owner " << tile->getOwner() << endl;
-            cout << "clicked current player " << this->current_player << endl;
+            cout << "tileClicked tile owner " << tile->getOwner() << endl;
+            cout << "tileClicked current player " << this->current_player << endl;
 
             // check for a winner 
             if( this->checkForWinner( tile ) )
+                
                 this->declareWinner( tile->getOwner() );
+            
+            // end game, tie
+            else if( this->moves >= 8 )
+            
+                this->endGame();
+
+            // change turn to next player
             else
-                // change turn to next player
+                
                 this->changeTurn();
 
         }
@@ -545,4 +585,146 @@ Tile * Board::tileClicked( float mouse_x, float mouse_y ) {
     }
 
     return tile;
+}
+
+// checks if player can win with this tile
+bool Board::canWin( Tile * tile, Player * player ) {
+
+    if( DEBUGGING )
+        cout << "canWin" << endl;
+
+    if( DEBUGGING )
+        cout << "canWin id " << tile->id << " player " << player << endl;
+
+    if( tile->hasOwner() ) return false;
+    
+    bool winner = false;
+    tile->setOwner( player );
+    
+    if( this->checkForWinner( tile ) )
+        winner = true;
+
+    tile->setOwner( 0 );
+    return winner;
+ 
+ }
+
+// returns the opposing player
+Player * Board::getEnemy( Player * player ) {
+
+    if( this->player1 == player )
+        
+        return this->player2;
+
+    else
+
+        return this->player1;
+
+}
+
+void Board::endGame() {
+    
+    this->game_started = false;
+    this->current_player->endTurn();
+
+}
+
+
+/** AI methods **/
+// generates tile values ai moves are based on
+int Player::generateTileValue( Tile * tile, Board * board ) {
+
+    if( DEBUGGING )
+        cout << "generateTileValue" << endl;
+
+    int tile_value = 0;
+    int tile_id = tile->id;
+    Player * winning_player = 0;
+
+    // check if the ai or player moves to tile, the game ends
+    if( board->canWin( tile, this ) )
+
+        winning_player = this;
+
+    else if( board->canWin( tile, board->getEnemy( this ) ) )
+
+        winning_player = board->getEnemy( this );
+
+
+    if( tile->hasOwner() )
+        
+        tile_value = 0; // occupied tile
+    
+    else if( winning_player != 0 ) {
+
+        if( winning_player == this )
+
+            tile_value = 5; // winning move take it
+        
+        else
+        
+            tile_value = 4; // prevent loss
+
+    } else {
+
+        if( tile_id == 4 )
+
+            tile_value = 3; // center
+
+        else if( ( tile_id % 2 ) == 0 )
+
+            tile_value = 2; // edges
+
+        else
+
+            tile_value = 1; // sides
+
+    }
+
+
+    if( DEBUGGING && tile_value > 3 )
+        cout << "generateTileValue tile_id " << tile_id << " winning_player " << winning_player << endl;
+
+    if( DEBUGGING )
+        cout << endl;
+
+    return tile_value;
+
+}
+
+// calculates and returns AI move
+Tile * Player::aiMove( Board * board ) {
+
+    if( DEBUGGING )
+        cout << "aiMove" << endl;
+
+    Tile * tile;
+    int max = 0;
+    int temp = 0;
+
+    for( int n = 0; n < board->num_tiles; n++ ) {
+
+        temp = this->generateTileValue( board->getTile( n ), board );
+        
+        if( DEBUGGING )
+            cout << "aiMove max_value " << max << " tile " << board->getTile( n )->id << " value " << temp << endl;
+       
+        if( max >= temp ) continue;
+        tile = board->getTile( n );
+        max = temp;
+
+    }
+
+    if( DEBUGGING )
+        cout << "aiMove tile " << tile->id << endl;
+
+    if( DEBUGGING )
+        cout << endl;
+    
+    return tile;
+
+}
+
+bool Player::getIsHuman() const {
+    return this->is_human;
 }
