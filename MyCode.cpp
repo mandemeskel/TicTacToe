@@ -195,9 +195,7 @@ void Line::draw( Point * color ) const {
 }
 
 void Line::draw( bool supress_color = false ) const {
-
-    // cout << "line draw" << endl;
-
+    
     // hide the lines natural color, this is for polygons
     // who want to control their color
     if( !supress_color )
@@ -254,22 +252,11 @@ void Polygon::draw() {
 
 }
 
-// void Polygon::invertColor() {
-
-//     this->upper_left.r = abs( this->upper_left.r - 1 );
-//     this->upper_left.g = abs( this->upper_left.g - 1 );
-//     this->upper_left.b = abs( this->upper_left.b - 1 );
-    
-// }
-
 void Polygon::invertColor( Polygon * poly ) {
 
     poly->upper_left.r = abs( poly->upper_left.r - 1 );
     poly->upper_left.g = abs( poly->upper_left.g - 1 );
     poly->upper_left.b = abs( poly->upper_left.b - 1 );
-    // cout << "inverted color: " << poly->upper_left.r << endl;
-    // cout << poly << endl;
-    // cout << &poly->upper_left << endl;
     
 }
 
@@ -285,11 +272,45 @@ void Polygon::click( float x, float y ) {
     cout << "poly click" << endl;
 }
 
+void Polygon::setColor( Point * color ) {
+
+    this->upper_left.r = color->r;
+    this->upper_left.g = color->g;
+    this->upper_left.b = color->b;
+
+}
+
+void Polygon::setColor( float red, float green, float blue ) {
+
+    this->upper_left.r = red;
+    this->upper_left.g = green;
+    this->upper_left.b = blue;
+
+}
+
 void Polygon::setOnClick( void (*callback)( Polygon *) ) {
 
     this->onClick = callback;
 
 }
+
+const Point * Polygon::getUpperLeft() const {
+    return &( this->upper_left );
+}
+
+const Point * Polygon::getCenter() {
+
+    if( this->center == 0 ) {
+
+        float x = this->upper_left.x + this->length/2;
+        float y = this->upper_left.y - this->length/2;
+        this->center = new Point( x, y );
+
+    }
+
+    return this->center;
+}
+
 
 
 /**
@@ -323,16 +344,7 @@ bool Rect::contains( Point point ) {
     float max_x, min_y;
 
     max_x = min_x + this->width;
-
     min_y = max_y - this->height;
-
-    cout << endl;
-    cout << "min_x: " << min_x << endl;
-    cout  << "max_y: " <<  max_y << endl;
-    cout  << "max_x: " <<  max_x << endl;
-    cout  << "min_y: " <<  min_y << endl;
-    cout  << "getX: " <<  point.getX() << endl;
-    cout  << "getY: " <<  point.getY() << endl;
 
     if( point.getX() < min_x || point.getY() > max_y )
         return false;
@@ -359,8 +371,6 @@ void Rect::draw() const {
         this->upper_left.b
     );
 
-    // cout << "rect draw" << endl;
-
     // Draw the lines for the square
     for( int n = 0; n < Rect::sides; n++ )
         this->lines[n].draw( true );
@@ -379,9 +389,6 @@ void Rect::setUpLines() {
         this->upper_left.y - this->height
     );
 
-    // cout << "width: " << this->width << endl;
-    // cout << "height: " << this->height << endl;
-
     // top line
     this->lines[0] = Line( 
         left_pnt->getX(),
@@ -389,9 +396,6 @@ void Rect::setUpLines() {
         this->upper_left.getX() + this->width,
         this->upper_left.getY()
     );
-
-    // cout << "width: " << this->width << endl;
-    // cout << "height: " << this->height << endl;
 
     // left line
     this->lines[1] = Line( left_pnt,
@@ -417,14 +421,10 @@ void Rect::setUpLines() {
         ) 
     );
 
-    // cout << "width: " << this->width << endl;
-    // cout << "height: " << this->height << endl;
-
 }
 
 void Rect::click() {
 
-    // cout << "rect click" << endl;
     if( this->onClick )
         this->onClick( this );
 
@@ -432,8 +432,6 @@ void Rect::click() {
 
 void Rect::click( Point pnt ) {
 
-    cout << "rect click" << "( " << pnt.getX();
-    cout << ", " << pnt.getY() << " )" << endl;
     if( this->onClick )
         this->onClick( this );
 
@@ -446,5 +444,18 @@ void Rect::click( float x, float y ) {
     if( this->onClick )
         this->onClick( this );
 
+}
+
+const Point * Rect::getCenter() {
+
+    if( this->center == 0 ) {
+
+        float x = this->upper_left.x + this->width/2;
+        float y = this->upper_left.y - this->height/2;
+        this->center = new Point( x, y );
+
+    }
+
+    return this->center;
 }
 

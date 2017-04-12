@@ -19,76 +19,14 @@ App::App(const char* label, int x, int y, int w, int h): GlutApp(label, x, y, w,
     this->mouse = Point( mx, my );
     Rect * rect;
 
-    // for( int n = 1; n < 10; n++ ) {
+    // rect = new Rect( 
+    //     -0.9, 0, 0.2, 0.3    
+    // );
+    // rect->setOnClick( &invertColor );
+    // this->addPolygon( rect );
 
-    //     rect = new Rect( 
-    //         n%10, n%10, n%2/10, n%3/10    
-    //     );
-    //     // rect->setOnClick( &Polygon::invertColor );
-    //     rect->setOnClick( &invertColor );
-    //     this->addPolygon( rect );
-
-    // }
-
-    rect = new Rect( 
-        -0.9, 0, 0.2, 0.3    
-    );
-    // rect->setOnClick( &Polygon::invertColor );
-    rect->setOnClick( &invertColor );
-    this->addPolygon( rect );
-
-    
-    rect = new Rect( 
-        0, 0, 0.1, 0.1    
-    );
-    // rect->setOnClick( &Polygon::invertColor );
-    rect->setOnClick( &invertColor );
-    this->addPolygon( rect );
-
-    rect = new Rect( 
-        -0.9, -0.7, 0.3, 0.2    
-    );
-    // rect->setOnClick( &Polygon::invertColor );
-    rect->setOnClick( &invertColor );
-    this->addPolygon( rect );
-
-    
-    rect = new Rect( 
-        0.6, 0, 0.25, 0.25    
-    );
-    // rect->setOnClick( &Polygon::invertColor );
-    rect->setOnClick( &invertColor );
-    this->addPolygon( rect );
-
-    rect = new Rect( 
-        0, -0.7, 0.5, 0.1    
-    );
-    // rect->setOnClick( &Polygon::invertColor );
-    rect->setOnClick( &invertColor );
-    this->addPolygon( rect );
-
-    
-    rect = new Rect( 
-        0, 0.9, 0.1, 0.5    
-    );
-    // rect->setOnClick( &Polygon::invertColor );
-    rect->setOnClick( &invertColor );
-    this->addPolygon( rect );
-
-
-    rect = new Rect( 
-        -0.95, 0.95, 0.5, 0.5    
-    );
-    // rect->setOnClick( &Polygon::invertColor );
-    rect->setOnClick( &invertColor );
-    this->addPolygon( rect );
-
-    rect = new Rect( 
-        0.45, 0.95, 0.5, 0.7    
-    );
-    // rect->setOnClick( &Polygon::invertColor );
-    rect->setOnClick( &invertColor );
-    this->addPolygon( rect );
+    // create tictactoe board
+    this->board = new Board();
 
 }
 
@@ -148,6 +86,9 @@ void App::draw() {
     // draw our shapes
     for( int n = 0; n < this->shapes.size(); n++ )
         this->shapes[n]->draw();
+
+    // draw board
+    this->board->draw();
     
     // We have been drawing everything to the back buffer
     // Swap the buffers to see the result of what we drew
@@ -163,16 +104,18 @@ void App::mouseDown(float x, float y){
     mouse.setX( x );
     mouse.setY( y );
 
-    Polygon * poly;
-    // detect if mouse clicked any rects
-    for( int n = 0; n < this->polygons.size(); n++ ) {
+    // Polygon * poly;
+    // // detect if mouse clicked any rects
+    // for( int n = 0; n < this->polygons.size(); n++ ) {
         
-        poly = this->polygons[n];
-        if( poly->contains( mouse ) )
-            poly->click( mouse );
+    //     poly = this->polygons[n];
+    //     if( poly->contains( mouse ) )
+    //         poly->click( mouse );
 
-    }
-    
+    // }
+
+    // check for clicks on board
+    this->board->contains( x, y );
     
     // Redraw the scene
     redraw();

@@ -4,6 +4,7 @@
 
 #include "GlutApp.h"
 #include "MyCode.h"
+#include "tictactoe.h"
 #include <deque>
 
 
@@ -16,6 +17,7 @@ private:
     Point mouse;
     std::deque<Shape *> shapes; // for drawing
     std::deque<Polygon *> polygons; // for click detection
+    Board * board; // tictactoe ga,e board
 
 public:
     // Constructor, to initialize state
