@@ -32,7 +32,7 @@ void Button::draw() const {
     glEnable( GL_LINE_SMOOTH );
     glColor3f( 0, 0, 0 );
     glLineWidth( 2 );
-    glTranslatef( this->upper_left.x + (this->width/8), this->upper_left.y - (this->height/1.25), 0 );
+    glTranslatef( this->upper_left.x + 0.15, this->upper_left.y - 0.2, 0 );
     glScalef( 1/1250.0, 1/1250.0, 1/1250.0 ); // need to scale text for it to fit in
     for( int n = 0; n < this->label.length(); n++ )
         glutStrokeCharacter( 
@@ -139,9 +139,6 @@ void Player::endTurn() {
 void Player::reset() {
     this->is_turn = false;
     this->is_human = false;
-    // this->color->r = 0;
-    // this->color->g = 0;
-    // this->color->b = 0;
 }
 
 void Player::setIsHuman( bool human ) {
@@ -185,8 +182,8 @@ Board::~Board() {
         delete this->tiles[n];
 
     // free menu
-    delete this->menu_p1;
-    delete this->menu_p2;
+    // delete this->menu_p1;
+    // delete this->menu_p2;
     delete this->menu_pvp;
     delete this->menu_pve;
 
@@ -280,10 +277,10 @@ bool Board::checkForWinner( Tile * tile ) const {
 
 // create menu to control game
 void Board::menu() {
-    this->menu_p1 = new Button( -0.5, -0.5, 0.25, 0.15, "P1" );
-    this->menu_p2 = new Button( -0.25, -0.5, 0.25, 0.15, "P2" );
-    this->menu_pvp = new Button( 0.0, -0.5, 0.25, 0.15, "PVP" );
-    this->menu_pve = new Button( 0.25, -0.5, 0.25, 0.15, "PVE" );
+    // this->menu_p1 = new Button( -0.5, -0.5, 0.25, 0.15, "P1" );
+    // this->menu_p2 = new Button( -0.25, -0.5, 0.25, 0.15, "P2" );
+    this->menu_pvp = new Button( -0.5, -0.5, 0.50, 0.3, "PVP" );
+    this->menu_pve = new Button( 0.0, -0.5, 0.50, 0.3, "PVE" );
 }
 
 // handle clicks for menu
@@ -318,8 +315,8 @@ bool Board::menuContains( float x, float y ) {
 
 // draw menu to control game
 void Board::menuDraw() const {
-    this->menu_p1->draw();
-    this->menu_p2->draw();
+    // this->menu_p1->draw();
+    // this->menu_p2->draw();
     this->menu_pvp->draw();
     this->menu_pve->draw();
 }
@@ -436,8 +433,14 @@ void Board::changeTurn() {
 // make it obivous who won the game 
 void Board::declareWinner( Player * player ) {
 
-    for( int n = 0; n < this->num_tiles; n++ )
-        this->tiles[n]->setOwner( player );
+    Player * enemy = this->getEnemy( player );
+    for( int n = 0; n < this->num_tiles; n++ ) {
+        
+        if( this->tiles[n]->isOwner( enemy ) )
+            this->tiles[n]->reset();
+            // this->tiles[n]->setOwner( player );
+
+    }
 
 }
 
